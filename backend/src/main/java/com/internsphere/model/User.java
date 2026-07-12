@@ -40,6 +40,7 @@ public class User {
     private Integer totalAssessments = 5;
     private Boolean projectSubmitted = false;
     private String status = "active";
+    private String lastLogin;
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Assignment> assignments = new ArrayList<>();
@@ -126,4 +127,7 @@ public class User {
 
     public List<Activity> getActivities() { return activities; }
     public void setActivities(List<Activity> activities) { this.activities = activities; }
+
+    public String getLastLogin() { return lastLogin; }
+    public void setLastLogin(String lastLogin) { this.lastLogin = lastLogin; }
 }

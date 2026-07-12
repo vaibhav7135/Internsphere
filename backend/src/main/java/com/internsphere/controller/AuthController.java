@@ -21,6 +21,11 @@ public class AuthController {
         if (userOpt.isPresent()) {
             User user = userOpt.get();
             if (user.getPassword().equals(request.getPassword())) {
+                // Update last login timestamp
+                String currentTimestamp = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date());
+                user.setLastLogin(currentTimestamp);
+                userRepository.save(user);
+
                 // Return user details without password
                 User responseUser = copyWithoutPassword(user);
                 return ResponseEntity.ok(responseUser);
@@ -49,6 +54,7 @@ public class AuthController {
         copy.setTotalAssessments(original.getTotalAssessments());
         copy.setProjectSubmitted(original.getProjectSubmitted());
         copy.setStatus(original.getStatus());
+        copy.setLastLogin(original.getLastLogin());
         copy.setAssignments(original.getAssignments());
         copy.setAssessments(original.getAssessments());
         copy.setProject(original.getProject());

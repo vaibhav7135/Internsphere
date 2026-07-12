@@ -68,6 +68,7 @@ const ManageStudents = () => {
           progress: s.progress || 0,
           status: s.status || 'pending',
           enrolledDate: s.enrolledDate || new Date().toISOString().split('T')[0],
+          lastLogin: s.lastLogin,
         }));
         setStudents(mappedProfiles);
       }
@@ -227,7 +228,12 @@ const ManageStudents = () => {
                     <span className="manage-students__name">{student.name}</span>
                   </div>
                 </td>
-                <td>{student.email}</td>
+                <td>
+                  <div>{student.email}</div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                    Last login: {student.lastLogin || 'Never'}
+                  </div>
+                </td>
                 <td>{student.college}</td>
                 <td><span className="badge badge--primary">{student.program}</span></td>
                 <td><code className="manage-students__batch-code">{student.batch}</code></td>
