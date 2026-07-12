@@ -6,8 +6,8 @@ import './Login.css';
 
 const Login = () => {
   const [role, setRole] = useState('student');
-  const [email, setEmail] = useState('student@demo.com');
-  const [password, setPassword] = useState('password');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
@@ -28,16 +28,8 @@ const Login = () => {
 
   const handleRoleChange = (selectedRole) => {
     setRole(selectedRole);
-    if (selectedRole === 'student') {
-      setEmail('student@demo.com');
-      setPassword('password');
-    } else if (selectedRole === 'mentor') {
-      setEmail('mentor@demo.com');
-      setPassword('password');
-    } else if (selectedRole === 'admin') {
-      setEmail('admin@internsphere.com');
-      setPassword('admin@7804');
-    }
+    setEmail('');
+    setPassword('');
     setError('');
   };
 
