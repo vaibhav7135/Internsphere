@@ -159,18 +159,6 @@ const Login = () => {
               )}
             </button>
           </form>
-
-          {/* Register Redirect */}
-          <div className="login-footer">
-            <p>
-              Don't have an account? <Link to="/register">Create an account</Link>
-            </p>
-          </div>
-
-          {/* Demo Notice */}
-          <div className="login-demo-notice">
-            <p><strong>Demo Access:</strong> Select a role above to auto-fill credentials. Password is <code>password</code> (for Student/Mentor) or <code>admin@7804</code> (for Admin).</p>
-          </div>
         </div>
       </div>
     </div>
