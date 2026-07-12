@@ -6,23 +6,43 @@ import './Certificates.css';
 
 const Certificates = () => {
   const { user } = useAuth();
-  
-  // Use progress to determine certificate availability. 
-  // For demo support, let's allow generating a mock certificate even if progress is less than 100%.
-  const [allowDemoDownload, setAllowDemoDownload] = useState(true);
+  const [allowDemoDownload, setAllowDemoDownload] = useState(false);
 
-  const mockCertificateDetails = {
+  // Load from global certificates registry (localStorage)
+  const stored = localStorage.getItem('internsphere_certificates');
+  let userCert = null;
+  if (stored && user?.email) {
+    try {
+      const allCerts = JSON.parse(stored);
+      userCert = allCerts.find(c => c.studentEmail.toLowerCase() === user.email.toLowerCase());
+    } catch {
+      userCert = null;
+    }
+  }
+
+  // Eligible to download if they have an admin issued certificate, progress = 100%, or demo mode is on
+  const hasCertificate = !!userCert || user?.progress === 100 || allowDemoDownload;
+
+  const certificateDetails = userCert || {
+    id: 'CERT-IS-2026-DEMO',
     studentName: user?.name || 'Aarav Patel',
     studentEmail: user?.email || 'student@demo.com',
-    program: 'Web Development',
+    program: user?.enrolledProgram || 'Web Development',
     issueDate: new Date().toISOString().split('T')[0],
-    certificateId: 'CERT-IS-2026-001',
     grade: 'A+',
     score: 95,
   };
 
   const handleDownload = () => {
-    generateCertificatePDF(mockCertificateDetails);
+    generateCertificatePDF({
+      id: certificateDetails.id,
+      studentName: certificateDetails.studentName,
+      studentEmail: certificateDetails.studentEmail,
+      program: certificateDetails.program,
+      issueDate: certificateDetails.issueDate,
+      grade: certificateDetails.grade,
+      score: certificateDetails.score,
+    });
   };
 
   return (
@@ -34,7 +54,7 @@ const Certificates = () => {
 
       <div className="certificates__grid">
         {/* Certificate Card */}
-        {allowDemoDownload || user?.progress === 100 ? (
+        {hasCertificate ? (
           <div className="certificates__card card animate-fadeInUp delay-1">
             <div className="certificates__card-top">
               <div className="certificates__badge-wrapper">
@@ -43,23 +63,23 @@ const Certificates = () => {
                 </div>
                 <div className="certificates__status">
                   <span className="badge badge--success">
-                    <ShieldCheck size={12} /> Verified
+                    <ShieldCheck size={12} /> {userCert ? 'Verified & Issued' : 'Verified'}
                   </span>
                 </div>
               </div>
               <h3 className="certificates__title">Certificate of Internship Completion</h3>
-              <p className="certificates__program">{mockCertificateDetails.program} Remote Internship</p>
+              <p className="certificates__program">{certificateDetails.program} Remote Internship</p>
               
               <div className="certificates__meta">
                 <div className="certificates__meta-item">
                   <Calendar size={14} />
-                  <span>Issued: {new Date(mockCertificateDetails.issueDate).toLocaleDateString('en-IN', {
+                  <span>Issued: {new Date(certificateDetails.issueDate).toLocaleDateString('en-IN', {
                     day: 'numeric', month: 'long', year: 'numeric'
                   })}</span>
                 </div>
                 <div className="certificates__meta-item">
                   <Search size={14} />
-                  <span>ID: {mockCertificateDetails.certificateId}</span>
+                  <span>ID: {certificateDetails.id}</span>
                 </div>
               </div>
             </div>
@@ -69,7 +89,7 @@ const Certificates = () => {
                 <Download size={14} /> Download PDF
               </button>
               <a
-                href={`/verify-certificate?id=${mockCertificateDetails.certificateId}`}
+                href={`/verify-certificate?id=${certificateDetails.id}`}
                 target="_blank"
                 rel="noreferrer"
                 className="btn btn--secondary btn--sm"
@@ -89,7 +109,7 @@ const Certificates = () => {
               </div>
             </div>
             <h3 className="certificates__title">Certificate of Internship Completion</h3>
-            <p className="certificates__program">{mockCertificateDetails.program} Remote Internship</p>
+            <p className="certificates__program">{certificateDetails.program} Remote Internship</p>
             
             <p className="certificates__locked-text">
               Complete all learning modules, assignments, and the final project to unlock your certificate.
@@ -109,10 +129,10 @@ const Certificates = () => {
       </div>
 
       {/* Demo helper */}
-      {!allowDemoDownload && user?.progress < 100 && (
+      {!hasCertificate && (
         <div className="certificates__demo-helper card animate-fadeInUp delay-2">
-          <h4>💡 Instructor Demo Feature</h4>
-          <p>Your current progress is under 100%, but you can bypass this to test the certificate generation PDF system.</p>
+          <h4>💡 Candidate Demo Feature</h4>
+          <p>Your current progress is under 100% and no certificate has been issued by administration yet. You can bypass this restriction to test the dynamic PDF template download.</p>
           <button className="btn btn--primary btn--sm" onClick={() => setAllowDemoDownload(true)}>
             Enable Certificate Mock Download
           </button>

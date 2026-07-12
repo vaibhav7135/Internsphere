@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router';
 import {
   Users,
@@ -6,7 +6,6 @@ import {
   BookOpen,
   TrendingUp,
   ArrowUpRight,
-  GraduationCap,
   Award,
   FileText,
   Calendar,
@@ -22,24 +21,8 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { useAuth } from '../../context/AuthContext';
+import { internships } from '../../data/internships';
 import './AdminDashboard.css';
-
-const registrationsData = [
-  { month: 'Feb', registrations: 52 },
-  { month: 'Mar', registrations: 68 },
-  { month: 'Apr', registrations: 74 },
-  { month: 'May', registrations: 89 },
-  { month: 'Jun', registrations: 105 },
-  { month: 'Jul', registrations: 97 },
-];
-
-const recentRegistrations = [
-  { id: 1, name: 'Aarav Patel', program: 'Web Development', date: '2026-07-10', status: 'active' },
-  { id: 2, name: 'Sneha Reddy', program: 'Data Science', date: '2026-07-09', status: 'active' },
-  { id: 3, name: 'Karthik Nair', program: 'Machine Learning', date: '2026-07-08', status: 'pending' },
-  { id: 4, name: 'Priya Singh', program: 'UI/UX Design', date: '2026-07-07', status: 'active' },
-  { id: 5, name: 'Rahul Gupta', program: 'Web Development', date: '2026-07-06', status: 'pending' },
-];
 
 const quickActions = [
   {
@@ -65,11 +48,12 @@ const quickActions = [
   },
 ];
 
-const CustomTooltip = ({ active, payload, label }) => {
+const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
+    const data = payload[0].payload;
     return (
       <div className="admin-dash__chart-tooltip">
-        <p className="admin-dash__chart-tooltip-label">{label}</p>
+        <p className="admin-dash__chart-tooltip-label">{data.fullName}</p>
         <p className="admin-dash__chart-tooltip-value">{payload[0].value} Enrolled</p>
       </div>
     );
@@ -79,11 +63,123 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 const AdminDashboard = () => {
   const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    totalStudents: 0,
+    activeMentors: 0,
+    activePrograms: internships.length,
+    newStudentsThisWeek: 0,
+    newMentorsThisWeek: 0,
+  });
+  const [chartData, setChartData] = useState([]);
+  const [recentRegistrations, setRecentRegistrations] = useState([]);
+
+  useEffect(() => {
+    fetch('/api/users')
+      .then((res) => (res.ok ? res.json() : []))
+      .then((allUsers) => {
+        const students = allUsers.filter((u) => u.role === 'student');
+        const mentors = allUsers.filter((u) => u.role === 'mentor');
+
+        // Calculate students registered in the last 7 days
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        const newStudents = students.filter((s) => {
+          if (!s.enrolledDate) return false;
+          try {
+            return new Date(s.enrolledDate) >= sevenDaysAgo;
+          } catch {
+            return false;
+          }
+        }).length;
+
+        // Calculate new mentors this week
+        const newMentors = mentors.filter((m) => {
+          if (!m.enrolledDate) return false;
+          try {
+            return new Date(m.enrolledDate) >= sevenDaysAgo;
+          } catch {
+            return false;
+          }
+        }).length;
+
+        // Set basic counts
+        setStats({
+          totalStudents: students.length,
+          activeMentors: mentors.length,
+          activePrograms: internships.length,
+          newStudentsThisWeek: newStudents,
+          newMentorsThisWeek: newMentors,
+        });
+
+        // Get 5 most recent registrations
+        const sortedStudents = [...students]
+          .sort((a, b) => {
+            const dateA = a.enrolledDate ? new Date(a.enrolledDate) : new Date(0);
+            const dateB = b.enrolledDate ? new Date(b.enrolledDate) : new Date(0);
+            return dateB - dateA;
+          })
+          .slice(0, 5)
+          .map((s) => ({
+            id: s.id,
+            name: s.name,
+            program: s.enrolledProgram || 'Web Development',
+            date: s.enrolledDate || new Date().toISOString().split('T')[0],
+            status: s.status || 'pending',
+          }));
+        setRecentRegistrations(sortedStudents);
+
+        // Group students by program domain for chart
+        const programCounts = students.reduce((acc, s) => {
+          const prog = s.enrolledProgram || 'Web Development';
+          acc[prog] = (acc[prog] || 0) + 1;
+          return acc;
+        }, {});
+
+        // Build chartData matching actual programs
+        const builtChartData = internships.map((internship) => {
+          // Extract initials of the program title e.g. "Web Development" -> "WD"
+          const initials = internship.title
+            .split(' ')
+            .map((w) => w[0])
+            .join('');
+          return {
+            program: initials,
+            fullName: internship.title,
+            registrations: programCounts[internship.title] || 0,
+          };
+        });
+        setChartData(builtChartData);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Failed to load admin stats:', err);
+        setLoading(false);
+      });
+  }, []);
 
   const statsCards = [
-    { title: 'Total Students', value: '156', change: '+12%', icon: Users, color: 'blue' },
-    { title: 'Active Mentors', value: '12', change: '+2', icon: UserCheck, color: 'green' },
-    { title: 'Active Programs', value: '8', change: '+1', icon: BookOpen, color: 'red' },
+    {
+      title: 'Total Students',
+      value: stats.totalStudents,
+      change: `+${stats.newStudentsThisWeek} this week`,
+      icon: Users,
+      color: 'blue',
+    },
+    {
+      title: 'Active Mentors',
+      value: stats.activeMentors,
+      change: `+${stats.newMentorsThisWeek} this week`,
+      icon: UserCheck,
+      color: 'green',
+    },
+    {
+      title: 'Active Programs',
+      value: stats.activePrograms,
+      change: `Total ${stats.activePrograms} Live`,
+      icon: BookOpen,
+      color: 'red',
+    },
   ];
 
   const getStatusBadge = (status) => {
@@ -94,6 +190,14 @@ const AdminDashboard = () => {
     };
     return classMap[status] || 'badge badge--primary';
   };
+
+  if (loading) {
+    return (
+      <div className="admin-dash" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '350px' }}>
+        <div className="spinner" />
+      </div>
+    );
+  }
 
   return (
     <div className="admin-dash">
@@ -132,22 +236,22 @@ const AdminDashboard = () => {
         <div className="admin-dash__chart-card card">
           <div className="admin-dash__chart-header">
             <h3>Enrollments Overview</h3>
-            <span className="badge badge--primary">Last 6 Months</span>
+            <span className="badge badge--primary">By Program Domain</span>
           </div>
           <div className="admin-dash__chart-wrapper">
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={registrationsData} barSize={36} margin={{ top: 5, right: 5, left: -15, bottom: 5 }}>
+              <BarChart data={chartData} barSize={32} margin={{ top: 5, right: 5, left: -22, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
                 <XAxis
-                  dataKey="month"
+                  dataKey="program"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: '#64748B', fontSize: 13 }}
+                  tick={{ fill: '#64748B', fontSize: 11, fontWeight: 500 }}
                 />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: '#64748B', fontSize: 13 }}
+                  tick={{ fill: '#64748B', fontSize: 12 }}
                 />
                 <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(37, 99, 235, 0.06)' }} />
                 <Bar dataKey="registrations" fill="#2563EB" radius={[6, 6, 0, 0]} />
@@ -186,19 +290,28 @@ const AdminDashboard = () => {
                       </div>
                     </td>
                     <td>{reg.program}</td>
-                    <td>{new Date(reg.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</td>
+                    <td>
+                      {reg.date ? new Date(reg.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : '—'}
+                    </td>
                     <td>
                       <span className={getStatusBadge(reg.status)}>
                         {reg.status.charAt(0).toUpperCase() + reg.status.slice(1)}
                       </span>
                     </td>
                     <td>
-                      <button className="btn btn--ghost btn--sm">
+                      <Link to="/admin/students" className="btn btn--ghost btn--sm">
                         <Eye size={14} /> View
-                      </button>
+                      </Link>
                     </td>
                   </tr>
                 ))}
+                {recentRegistrations.length === 0 && (
+                  <tr>
+                    <td colSpan="5" className="text-center" style={{ padding: '24px 0', color: 'var(--text-secondary)' }}>
+                      No recent student registrations found.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

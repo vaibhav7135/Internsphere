@@ -23,7 +23,16 @@ const VerifyCertificate = () => {
     if (!id.trim()) return;
 
     setSearched(true);
-    const found = mockCertificates.find(
+    const stored = localStorage.getItem('internsphere_certificates');
+    let certificates = mockCertificates;
+    if (stored) {
+      try {
+        certificates = JSON.parse(stored);
+      } catch {
+        certificates = mockCertificates;
+      }
+    }
+    const found = certificates.find(
       (c) => c.id.toLowerCase() === id.trim().toLowerCase()
     );
     setCertificate(found || null);

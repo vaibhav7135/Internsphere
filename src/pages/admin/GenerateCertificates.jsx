@@ -1,19 +1,61 @@
-import { useState } from 'react';
-import { Award, FileText, CheckCircle2, User, Search, RefreshCw, Download } from 'lucide-react';
-import { mockStudents, mockCertificates } from '../../data/users';
+import { useState, useEffect } from 'react';
+import { Award, Search, RefreshCw, Download } from 'lucide-react';
+import { mockCertificates } from '../../data/users';
 import { generateCertificatePDF } from '../../utils/generateCertificate';
 import './GenerateCertificates.css';
 
-const initialEligible = [
-  { id: 'student-6', name: 'Ananya Das', email: 'ananya@example.com', program: 'Web Development', progress: 100, completedDate: '2026-06-30' },
-  { id: 'student-9', name: 'Harish Kumar', email: 'harish@example.com', program: 'Data Science', progress: 100, completedDate: '2026-07-08' },
-];
-
 const GenerateCertificates = () => {
-  const [eligibleList, setEligibleList] = useState(initialEligible);
-  const [issuedList, setIssuedList] = useState(mockCertificates);
+  const [eligibleList, setEligibleList] = useState([]);
+  const [issuedList, setIssuedList] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  // Load certificates registry and candidates with progress = 100%
+  useEffect(() => {
+    // 1. Load from localStorage or seed
+    const stored = localStorage.getItem('internsphere_certificates');
+    let certificates = [];
+    if (stored) {
+      try {
+        certificates = JSON.parse(stored);
+      } catch {
+        certificates = mockCertificates;
+      }
+    } else {
+      certificates = mockCertificates;
+      localStorage.setItem('internsphere_certificates', JSON.stringify(mockCertificates));
+    }
+    setIssuedList(certificates);
+
+    // 2. Fetch candidates from Spring Boot database
+    fetch('/api/users')
+      .then((res) => (res.ok ? res.json() : []))
+      .then((allUsers) => {
+        const students = allUsers.filter((u) => u.role === 'student');
+        
+        // Candidates eligible for a certificate have progress = 100%
+        // and do not already have an issued certificate in the registry.
+        const eligibleCandidates = students
+          .filter((s) => s.progress === 100)
+          .filter((s) => !certificates.some((c) => c.studentEmail.toLowerCase() === s.email.toLowerCase()))
+          .map((s) => ({
+            id: s.id,
+            name: s.name,
+            email: s.email,
+            program: s.enrolledProgram || 'Web Development',
+            progress: s.progress,
+            completedDate: s.enrolledDate || new Date().toISOString().split('T')[0],
+          }));
+
+        setEligibleList(eligibleCandidates);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Failed to load eligible candidates:', err);
+        setLoading(false);
+      });
+  }, []);
 
   const handleCheckboxChange = (id) => {
     setSelectedIds((prev) =>
@@ -35,7 +77,8 @@ const GenerateCertificates = () => {
     const generatedCerts = [];
     const updatedEligible = eligibleList.filter((student) => {
       if (selectedIds.includes(student.id)) {
-        const certId = `CERT-IS-2026-00${issuedList.length + generatedCerts.length + 1}`;
+        const certNum = issuedList.length + generatedCerts.length + 1;
+        const certId = `CERT-IS-2026-00${certNum}`;
         const newCert = {
           id: certId,
           studentName: student.name,
@@ -53,7 +96,9 @@ const GenerateCertificates = () => {
       return true;
     });
 
-    setIssuedList([...generatedCerts, ...issuedList]);
+    const newIssuedList = [...generatedCerts, ...issuedList];
+    setIssuedList(newIssuedList);
+    localStorage.setItem('internsphere_certificates', JSON.stringify(newIssuedList));
     setEligibleList(updatedEligible);
     setSelectedIds([]);
     alert(`Successfully generated ${generatedCerts.length} certificates!`);
@@ -67,6 +112,14 @@ const GenerateCertificates = () => {
     c.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
     c.id.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (loading) {
+    return (
+      <div className="generate-certs" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '350px' }}>
+        <div className="spinner" />
+      </div>
+    );
+  }
 
   return (
     <div className="generate-certs">
@@ -123,7 +176,11 @@ const GenerateCertificates = () => {
                       </td>
                       <td>{student.program}</td>
                       <td><span className="badge badge--success">{student.progress}%</span></td>
-                      <td>{new Date(student.completedDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</td>
+                      <td>
+                        {student.completedDate
+                          ? new Date(student.completedDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })
+                          : '—'}
+                      </td>
                     </tr>
                   ))}
 
