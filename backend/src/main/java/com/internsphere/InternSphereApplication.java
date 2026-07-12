@@ -39,8 +39,8 @@ public class InternSphereApplication {
                 User admin = new User();
                 admin.setId("admin-1");
                 admin.setName("Admin User");
-                admin.setEmail("admin@demo.com");
-                admin.setPassword("password");
+                admin.setEmail("admin@internsphere.com");
+                admin.setPassword("admin@7804");
                 admin.setRole("admin");
                 admin.setAvatar("AU");
                 admin.setPhone("+91 99999 00000");
@@ -82,6 +82,29 @@ public class InternSphereApplication {
                 createMockStudent(userRepository, "student-2", "Sneha Reddy", "sneha@example.com", "NIT Trichy", "Data Science", "DS-B2-2026");
                 createMockStudent(userRepository, "student-3", "Rahul Gupta", "rahul@example.com", "BITS Pilani", "Web Development", "WD-B1-2026");
                 createMockStudent(userRepository, "student-4", "Priya Singh", "priya@example.com", "DTU Delhi", "UI/UX Design", "UX-B1-2026");
+            }
+
+            // Always ensure the admin account has the latest requested credentials
+            java.util.List<User> admins = userRepository.findByRole("admin");
+            if (admins.isEmpty()) {
+                User admin = new User();
+                admin.setId("admin-1");
+                admin.setName("Admin User");
+                admin.setEmail("admin@internsphere.com");
+                admin.setPassword("admin@7804");
+                admin.setRole("admin");
+                admin.setAvatar("AU");
+                admin.setPhone("+91 99999 00000");
+                admin.setAssignments(new ArrayList<>());
+                admin.setAssessments(new ArrayList<>());
+                admin.setActivities(new ArrayList<>());
+                userRepository.save(admin);
+            } else {
+                for (User admin : admins) {
+                    admin.setEmail("admin@internsphere.com");
+                    admin.setPassword("admin@7804");
+                    userRepository.save(admin);
+                }
             }
         };
     }

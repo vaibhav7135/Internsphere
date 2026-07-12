@@ -30,12 +30,14 @@ const Login = () => {
     setRole(selectedRole);
     if (selectedRole === 'student') {
       setEmail('student@demo.com');
+      setPassword('password');
     } else if (selectedRole === 'mentor') {
       setEmail('mentor@demo.com');
+      setPassword('password');
     } else if (selectedRole === 'admin') {
-      setEmail('admin@demo.com');
+      setEmail('admin@internsphere.com');
+      setPassword('admin@7804');
     }
-    setPassword('password');
     setError('');
   };
 
@@ -175,7 +177,7 @@ const Login = () => {
 
           {/* Demo Notice */}
           <div className="login-demo-notice">
-            <p><strong>Demo Access:</strong> Select a role above. The credentials will auto-fill. Password is <code>password</code>.</p>
+            <p><strong>Demo Access:</strong> Select a role above to auto-fill credentials. Password is <code>password</code> (for Student/Mentor) or <code>admin@7804</code> (for Admin).</p>
           </div>
         </div>
       </div>
