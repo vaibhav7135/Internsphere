@@ -13,7 +13,20 @@ import {
 } from 'lucide-react';
 import './ManageStudents.css';
 
-const programs = ['All Programs', 'Web Development', 'Data Science', 'UI/UX Design', 'Machine Learning', 'App Development', 'Digital Marketing'];
+const programs = [
+  'All Programs',
+  'AI & Machine Learning',
+  'UI/UX Design',
+  'Digital Marketing',
+  'Java Full Stack',
+  'Python Development',
+  'Web Development',
+  'React.js',
+  'Spring Boot',
+  'DevOps',
+  'AWS Cloud',
+  'Data Science'
+];
 const statuses = ['All Status', 'active', 'pending', 'completed'];
 
 const ManageStudents = () => {

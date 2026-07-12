@@ -255,10 +255,17 @@ const ManageMentors = () => {
                   value={formData.expertise}
                   onChange={(e) => setFormData({ ...formData, expertise: e.target.value })}
                 >
-                  <option value="Web Development">Web Development</option>
-                  <option value="Data Science">Data Science</option>
+                  <option value="AI & Machine Learning">AI & Machine Learning</option>
                   <option value="UI/UX Design">UI/UX Design</option>
-                  <option value="Machine Learning">Machine Learning</option>
+                  <option value="Digital Marketing">Digital Marketing</option>
+                  <option value="Java Full Stack">Java Full Stack</option>
+                  <option value="Python Development">Python Development</option>
+                  <option value="Web Development">Web Development</option>
+                  <option value="React.js">React.js</option>
+                  <option value="Spring Boot">Spring Boot</option>
+                  <option value="DevOps">DevOps</option>
+                  <option value="AWS Cloud">AWS Cloud</option>
+                  <option value="Data Science">Data Science</option>
                 </select>
               </div>
               <div className="form-group">

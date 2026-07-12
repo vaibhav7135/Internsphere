@@ -66,7 +66,19 @@ const ManageBatches = () => {
     });
   };
 
-  const programOptions = ['Web Development', 'Data Science', 'UI/UX Design', 'Machine Learning', 'App Development', 'Digital Marketing', 'Cybersecurity', 'Cloud Computing'];
+  const programOptions = [
+    'AI & Machine Learning',
+    'UI/UX Design',
+    'Digital Marketing',
+    'Java Full Stack',
+    'Python Development',
+    'Web Development',
+    'React.js',
+    'Spring Boot',
+    'DevOps',
+    'AWS Cloud',
+    'Data Science'
+  ];
 
   return (
     <div className="manage-batches">
