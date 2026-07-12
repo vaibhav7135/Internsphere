@@ -1,0 +1,115 @@
+.generate-certs {
+  width: 100%;
+}
+
+.generate-certs__header {
+  margin-bottom: var(--space-8);
+}
+
+.generate-certs__grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: var(--space-8);
+  align-items: start;
+}
+
+.generate-certs__main {
+  display: flex;
+  flex-direction: column;
+}
+
+.eligible-card {
+  background-color: var(--white);
+  padding: var(--space-6);
+}
+
+.card-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header-flex h3 {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.student-email {
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+
+/* Sidebar registry */
+.issued-card {
+  background-color: var(--white);
+  padding: var(--space-6);
+}
+
+.issued-card h3 {
+  margin-bottom: var(--space-4);
+}
+
+.issued-scroll-list {
+  max-height: 420px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.issued-item-card {
+  border: 1px solid var(--gray-200);
+  padding: var(--space-4);
+  background-color: var(--gray-50);
+}
+
+.issued-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.issued-item-header h4 {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.download-btn {
+  color: var(--primary);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.download-btn:hover {
+  color: var(--primary-dark);
+}
+
+.cert-code {
+  font-family: monospace;
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  font-weight: 700;
+  display: block;
+  margin-bottom: var(--space-2);
+}
+
+.program-text {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.mb-4 {
+  margin-bottom: var(--space-4);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .generate-certs__grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+}
+

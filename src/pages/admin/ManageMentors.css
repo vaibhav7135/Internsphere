@@ -1,0 +1,162 @@
+/* ========================================
+   Manage Mentors Page
+   ======================================== */
+
+.manage-mentors {
+  padding: var(--space-2) 0;
+}
+
+.manage-mentors__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--space-6);
+  gap: var(--space-4);
+}
+
+.manage-mentors__title {
+  font-size: var(--font-size-3xl);
+  font-weight: 800;
+  margin-bottom: var(--space-2);
+}
+
+.manage-mentors__subtitle {
+  color: var(--text-secondary);
+  font-size: var(--font-size-base);
+}
+
+/* Stats Row */
+.manage-mentors__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-6);
+  margin-bottom: var(--space-8);
+}
+
+/* Mentor Cards Grid */
+.manage-mentors__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-6);
+}
+
+.manage-mentors__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.manage-mentors__card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.manage-mentors__avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--text-white);
+  flex-shrink: 0;
+}
+
+.manage-mentors__card-actions {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.manage-mentors__delete-btn:hover {
+  color: var(--danger) !important;
+  background: var(--danger-bg) !important;
+}
+
+.manage-mentors__name {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.manage-mentors__expertise {
+  font-size: var(--font-size-sm);
+  color: var(--primary);
+  font-weight: 600;
+  margin-bottom: var(--space-4);
+}
+
+.manage-mentors__meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.manage-mentors__meta-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.manage-mentors__meta-item svg {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.manage-mentors__card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+.manage-mentors__rating {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Modal */
+.manage-mentors__modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--gray-200);
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 768px) {
+  .manage-mentors__header {
+    flex-direction: column;
+  }
+
+  .manage-mentors__stats {
+    grid-template-columns: 1fr;
+  }
+
+  .manage-mentors__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .manage-mentors__title {
+    font-size: var(--font-size-2xl);
+  }
+}
+

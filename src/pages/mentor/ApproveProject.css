@@ -1,0 +1,107 @@
+.approve-project {
+  width: 100%;
+}
+
+.approve-project__header {
+  margin-bottom: var(--space-8);
+}
+
+.approve-project__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.approve-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--white);
+  padding: var(--space-6);
+}
+
+.approve-card-main {
+  flex: 1;
+}
+
+.approve-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--gray-100);
+  padding-bottom: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.approve-card-header h3 {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.student-info {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.project-description-text {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: var(--space-3);
+}
+
+.approve-metadata {
+  display: flex;
+  gap: var(--space-4);
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  margin-bottom: var(--space-3);
+}
+
+.approve-links {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.saved-review {
+  background-color: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  padding: 14px;
+  margin-top: var(--space-4);
+}
+
+.approve-card-actions {
+  margin-left: var(--space-8);
+  flex-shrink: 0;
+}
+
+.modal-action-btn-group {
+  display: flex;
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .approve-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-4);
+  }
+
+  .approve-card-actions {
+    margin-left: 0;
+  }
+
+  .approve-card-actions button {
+    width: 100%;
+  }
+
+  .modal-action-btn-group {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+}
+

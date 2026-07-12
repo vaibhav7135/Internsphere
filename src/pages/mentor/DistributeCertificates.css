@@ -1,0 +1,219 @@
+.distribute-certs__header {
+  margin-bottom: 24px;
+}
+.distribute-certs__header h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.distribute-certs__header p {
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+}
+
+.distribute-certs__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.distribute-certs__controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.distribute-certs__tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 4px;
+}
+
+.distribute-certs__tab {
+  background: none;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.distribute-certs__tab:hover {
+  background: var(--hover-bg);
+}
+.distribute-certs__tab--active {
+  background: var(--primary);
+  color: #fff;
+}
+
+.distribute-certs__search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 4px 12px;
+  min-width: 240px;
+}
+.distribute-certs__search .form-input {
+  border: none;
+  background: transparent;
+  padding: 6px 0;
+  font-size: 0.85rem;
+}
+
+.distribute-certs__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.distribute-certs__card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.distribute-certs__card-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
+}
+
+.distribute-certs__avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.distribute-certs__avatar--lg {
+  width: 56px;
+  height: 56px;
+  font-size: 1rem;
+}
+
+.distribute-certs__info h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.distribute-certs__email {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+.distribute-certs__meta-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.distribute-certs__progress-label {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.distribute-certs__card-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.distribute-certs__issued-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.distribute-certs__cert-id {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-family: monospace;
+}
+
+/* Modal body */
+.distribute-certs__modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.distribute-certs__modal-student {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  background: var(--hover-bg);
+  border-radius: 10px;
+}
+.distribute-certs__modal-student h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.distribute-certs__modal-student p {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.distribute-certs__modal-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--info-bg, rgba(59, 130, 246, 0.08));
+  border-radius: 8px;
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  border-left: 3px solid var(--primary);
+}
+
+.modal-action-btn-group {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+  .distribute-certs__controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .distribute-certs__search {
+    min-width: unset;
+  }
+  .distribute-certs__card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .distribute-certs__card-right {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  .distribute-certs__issued-info {
+    justify-content: flex-end;
+  }
+}

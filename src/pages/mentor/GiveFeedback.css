@@ -1,0 +1,146 @@
+.give-feedback {
+  width: 100%;
+}
+
+.give-feedback__header {
+  margin-bottom: var(--space-8);
+}
+
+.give-feedback__grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: var(--space-8);
+  align-items: start;
+}
+
+.feedback-form {
+  background-color: var(--white);
+  padding: var(--space-6);
+}
+
+.select-with-icon-box {
+  position: relative;
+}
+
+.select-box-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gray-400);
+}
+
+.select-box-with-icon {
+  padding-left: calc(var(--space-8) + var(--space-2));
+}
+
+.star-rating-box {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.star-btn {
+  cursor: pointer;
+}
+
+.category-ratings-box {
+  border: 1px solid var(--gray-200);
+  background-color: var(--gray-50);
+  padding: var(--space-5);
+  margin-top: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+.category-ratings-box h4 {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  margin-bottom: var(--space-4);
+  border-bottom: 1px solid var(--gray-200);
+  padding-bottom: var(--space-2);
+}
+
+.category-rating-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+}
+
+.category-rating-row:last-child {
+  margin-bottom: 0;
+}
+
+.cat-stars {
+  display: flex;
+  gap: 2px;
+}
+
+.cat-stars button {
+  cursor: pointer;
+}
+
+/* Sidebar log history */
+.feedback-logs-card {
+  background-color: var(--white);
+  padding: var(--space-6);
+}
+
+.feedback-logs-card h3 {
+  margin-bottom: var(--space-4);
+}
+
+.feedback-logs-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.feedback-log-item {
+  border: 1px solid var(--gray-200);
+  padding: var(--space-4);
+  background-color: var(--gray-50);
+}
+
+.feedback-log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.feedback-log-header h4 {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.feedback-log-stars {
+  display: flex;
+  gap: 1px;
+}
+
+.log-date {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: 600;
+  display: block;
+  margin-bottom: var(--space-2);
+}
+
+.log-text {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  line-height: 1.4;
+  font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .give-feedback__grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+}
+

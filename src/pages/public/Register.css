@@ -1,0 +1,222 @@
+.register-page {
+  min-height: calc(100vh - 72px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-secondary);
+  padding: var(--space-8) var(--container-padding);
+}
+
+.register-container {
+  width: 100%;
+  max-width: 520px;
+}
+
+.register-card {
+  background-color: var(--white);
+  padding: var(--space-8);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-xl);
+}
+
+.register-header {
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+
+.register-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-2xl);
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: var(--space-4);
+}
+
+.register-logo-icon {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.register-header h2 {
+  font-size: var(--font-size-2xl);
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.register-header p {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+/* Stepper Progress */
+.register-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-8);
+}
+
+.register-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  position: relative;
+  z-index: 2;
+  flex: 1;
+}
+
+.register-step-num {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background-color: var(--gray-200);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  border: 2px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.register-step-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.register-step-line {
+  flex: 1;
+  height: 2px;
+  background-color: var(--gray-200);
+  margin-bottom: 12px; /* align with numbers */
+}
+
+.register-step--active .register-step-num {
+  background-color: var(--primary-bg);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.register-step--active .register-step-label {
+  color: var(--primary);
+}
+
+/* Inputs */
+.register-input-wrapper {
+  position: relative;
+}
+
+.register-input-icon {
+  position: absolute;
+  left: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gray-400);
+}
+
+.register-input-with-icon {
+  padding-left: calc(var(--space-10) + var(--space-2));
+}
+
+.register-btn-next,
+.register-btn-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.register-btn-group {
+  display: flex;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+
+.register-btn-group .btn {
+  flex: 1;
+}
+
+/* Summary Card */
+.register-summary {
+  background-color: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  padding: var(--space-5);
+  margin-bottom: var(--space-5);
+}
+
+.register-summary h4 {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  margin-bottom: var(--space-4);
+  border-bottom: 1px solid var(--gray-200);
+  padding-bottom: var(--space-2);
+}
+
+.register-summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-sm);
+  margin-bottom: 10px;
+  color: var(--text-secondary);
+}
+
+.register-summary-row strong,
+.register-summary-row span:last-child {
+  color: var(--text-primary);
+}
+
+.register-summary-divider {
+  height: 1px;
+  background-color: var(--gray-200);
+  margin: var(--space-4) 0;
+}
+
+.register-checkbox-terms {
+  margin-bottom: var(--space-5);
+  font-size: var(--font-size-sm);
+}
+
+.register-error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background-color: var(--danger-bg);
+  color: var(--danger);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-6);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+
+.register-footer {
+  text-align: center;
+  margin-top: var(--space-6);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.register-footer a {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.register-footer a:hover {
+  color: var(--primary-dark);
+}
+

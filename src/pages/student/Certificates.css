@@ -1,0 +1,152 @@
+.certificates {
+  width: 100%;
+}
+
+.certificates__header {
+  margin-bottom: var(--space-8);
+}
+
+.certificates__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-8);
+}
+
+.certificates__card {
+  background-color: var(--white);
+  padding: var(--space-6);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 240px;
+  transition: all var(--transition-base);
+}
+
+.certificates__card:hover:not(.certificates__card--locked) {
+  border-color: var(--primary-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.certificates__card--locked {
+  background-color: var(--gray-50);
+  border-style: dashed;
+}
+
+.certificates__badge-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-5);
+}
+
+.certificates__logo-badge {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.certificates__logo-badge--locked {
+  background: var(--gray-300);
+}
+
+.certificates__title {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.certificates__program {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin-bottom: var(--space-4);
+}
+
+.certificates__meta {
+  display: flex;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.certificates__meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.certificates__card-actions {
+  display: flex;
+  gap: var(--space-4);
+  border-top: 1px solid var(--gray-200);
+  padding-top: var(--space-4);
+}
+
+.certificates__card-actions button,
+.certificates__card-actions a {
+  flex: 1;
+}
+
+/* Locked specifics */
+.certificates__locked-text {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-5);
+  line-height: 1.5;
+}
+
+.certificates__progress-box {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.certificates__progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* Demo box */
+.certificates__demo-helper {
+  margin-top: var(--space-8);
+  background-color: var(--primary-bg-light);
+  border-color: var(--primary-bg);
+  padding: var(--space-5);
+}
+
+.certificates__demo-helper h4 {
+  font-size: var(--font-size-sm);
+  color: var(--primary-dark);
+  margin-bottom: var(--space-1);
+}
+
+.certificates__demo-helper p {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-4);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .certificates__grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .certificates__card-actions {
+    flex-direction: column;
+  }
+}
+

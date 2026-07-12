@@ -1,0 +1,208 @@
+.progress-tracker {
+  width: 100%;
+}
+
+.progress-tracker__header {
+  margin-bottom: var(--space-8);
+}
+
+.progress-tracker__grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: var(--space-8);
+  align-items: start;
+}
+
+.progress-tracker__main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.progress-tracker__overview {
+  background-color: var(--white);
+  padding: var(--space-6);
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.circular-progress-box {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.circular-progress-box svg {
+  transform: rotate(-90deg);
+}
+
+.circular-progress-text {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.circular-progress-text h3 {
+  font-size: var(--font-size-2xl);
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.circular-progress-text span {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.progress-tracker__stats-details {
+  flex: 1;
+}
+
+.progress-tracker__stats-details h3 {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+}
+
+.progress-tracker__stats-details p {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-4);
+}
+
+.progress-subbar-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.progress-subbar-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.subbar-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* Chart */
+.progress-tracker__chart {
+  background-color: var(--white);
+  padding: var(--space-6);
+}
+
+.progress-tracker__chart h3 {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.chart-subtitle {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  margin-bottom: var(--space-5);
+}
+
+/* Sidebar checklist */
+.progress-milestones {
+  background-color: var(--white);
+  padding: var(--space-6);
+}
+
+.progress-milestones h3 {
+  margin-bottom: var(--space-5);
+  border-bottom: 1px solid var(--gray-100);
+  padding-bottom: var(--space-2);
+}
+
+.milestone-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  position: relative;
+}
+
+.milestone-list::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 10px;
+  bottom: 10px;
+  width: 2px;
+  background-color: var(--gray-200);
+  z-index: 1;
+}
+
+.milestone-item {
+  display: flex;
+  gap: var(--space-4);
+  position: relative;
+  z-index: 2;
+}
+
+.milestone-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background-color: var(--gray-200);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  flex-shrink: 0;
+  border: 2px solid var(--white);
+}
+
+.milestone-content h5 {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.milestone-content p {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.milestone-item--completed .milestone-icon {
+  background-color: var(--success-bg);
+  color: var(--success);
+}
+
+.milestone-item--active .milestone-icon {
+  background-color: var(--primary-bg);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .progress-tracker__grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+}
+
+@media (max-width: 768px) {
+  .progress-tracker__overview {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-5);
+  }
+}
+
