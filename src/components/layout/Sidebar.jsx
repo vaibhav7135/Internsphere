@@ -18,11 +18,13 @@ const menuItems = {
     { path: '/student/assessments', icon: ClipboardCheck, label: 'Assessments' },
     { path: '/student/project', icon: FolderUp, label: 'Project Submission' },
     { path: '/student/progress', icon: BarChart3, label: 'Progress Tracker' },
+    { path: '/student/teams', icon: Users, label: 'My Teams' },
     { path: '/student/profile', icon: User, label: 'Profile' },
   ],
   mentor: [
     { path: '/mentor/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { path: '/mentor/students', icon: Users, label: 'Assigned Students' },
+    { path: '/mentor/teams', icon: Layers, label: 'Manage Teams' },
     { path: '/mentor/materials', icon: Upload, label: 'Upload Materials' },
     { path: '/mentor/assignments', icon: PenTool, label: 'Create Assignments' },
     { path: '/mentor/assessments', icon: ClipboardCheck, label: 'Create Assessments' },

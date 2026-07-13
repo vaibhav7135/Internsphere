@@ -16,11 +16,13 @@ import Assignments from './pages/student/Assignments';
 import Assessments from './pages/student/Assessments';
 import ProjectSubmission from './pages/student/ProjectSubmission';
 import ProgressTracker from './pages/student/ProgressTracker';
+import TeamMembers from './pages/student/TeamMembers';
 import Profile from './pages/student/Profile';
 
 // Mentor Dashboard
 import MentorDashboard from './pages/mentor/MentorDashboard';
 import AssignedStudents from './pages/mentor/AssignedStudents';
+import ManageTeams from './pages/mentor/ManageTeams';
 import UploadMaterials from './pages/mentor/UploadMaterials';
 import CreateAssignments from './pages/mentor/CreateAssignments';
 import CreateAssessments from './pages/mentor/CreateAssessments';
@@ -67,6 +69,7 @@ const App = () => {
           <Route path="/student/assessments" element={<Assessments />} />
           <Route path="/student/project" element={<ProjectSubmission />} />
           <Route path="/student/progress" element={<ProgressTracker />} />
+          <Route path="/student/teams" element={<TeamMembers />} />
           <Route path="/student/profile" element={<Profile />} />
         </Route>
 
@@ -74,6 +77,7 @@ const App = () => {
         <Route element={<DashboardLayout allowedRole="mentor" />}>
           <Route path="/mentor/dashboard" element={<MentorDashboard />} />
           <Route path="/mentor/students" element={<AssignedStudents />} />
+          <Route path="/mentor/teams" element={<ManageTeams />} />
           <Route path="/mentor/materials" element={<UploadMaterials />} />
           <Route path="/mentor/assignments" element={<CreateAssignments />} />
           <Route path="/mentor/assessments" element={<CreateAssessments />} />

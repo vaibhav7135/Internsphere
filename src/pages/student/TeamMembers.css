@@ -1,0 +1,312 @@
+.team-members {
+  padding: var(--space-4);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.team-members__header {
+  margin-bottom: var(--space-4);
+}
+
+.team-members__header h1 {
+  font-size: var(--font-size-2xl);
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.025em;
+  margin-bottom: 4px;
+}
+
+.team-members__header p {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+/* Tabs UI */
+.team-members__tabs {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: var(--space-2);
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-4);
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.tab-btn--active {
+  background: rgba(37, 99, 235, 0.08);
+  color: var(--primary);
+}
+
+/* Search Box Style */
+.directory-search {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 10px 16px;
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--border-color);
+  background: var(--bg-card-glass);
+  margin-bottom: var(--space-4);
+}
+
+.directory-search .search-icon {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.directory-search input {
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  font-size: var(--font-size-sm);
+}
+
+.directory-search input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Teammate Cards Grid */
+.teammates-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-4);
+}
+
+.teammate-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-xl);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.teammate-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(37, 99, 235, 0.15);
+}
+
+.teammate-card__top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.teammate-card__avatar {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: white;
+  font-weight: 700;
+  font-size: var(--font-size-md);
+  border-radius: var(--border-radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.15);
+}
+
+.teammate-card__meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.teammate-card__name {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.teammate-card__domain {
+  align-self: flex-start;
+  font-size: 10px;
+}
+
+.teammate-card__details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: var(--space-4);
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.detail-item a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.detail-item a:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.teammate-card__progress {
+  margin-bottom: var(--space-4);
+  flex-grow: 1;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.teammate-card__actions {
+  margin-top: auto;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-xl);
+}
+
+.empty-icon {
+  color: var(--text-secondary);
+  margin-bottom: var(--space-3);
+  opacity: 0.6;
+}
+
+.empty-state h3 {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.empty-state p {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  max-width: 280px;
+}
+
+/* Teams List View */
+.teams-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-4);
+}
+
+.student-team-card {
+  padding: var(--space-4);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.student-team-card__header {
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.student-team-card__header h3 {
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.student-team-card__header p {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.student-team-card__members h4 {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-2);
+}
+
+.members-avatars-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.member-avatar-chip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 6px 12px;
+  background: var(--bg-page);
+  border-radius: var(--border-radius-full);
+  border: 1px solid var(--border-color);
+  align-self: flex-start;
+}
+
+.member-avatar-chip__avatar {
+  width: 22px;
+  height: 22px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: white;
+  font-size: 8px;
+  font-weight: 700;
+  border-radius: var(--border-radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.member-avatar-chip__name {
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+  .team-members {
+    padding: var(--space-3);
+  }
+
+  .teammates-grid, .teams-list-grid {
+    grid-template-columns: 1fr;
+  }
+}
