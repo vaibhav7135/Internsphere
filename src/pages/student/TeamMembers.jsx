@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Users, Mail, GraduationCap, Award, Compass, Search } from 'lucide-react';
+import { Users, Mail, GraduationCap, Award, Compass, Search, Phone } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import './TeamMembers.css';
 
@@ -118,6 +118,10 @@ const TeamMembers = () => {
                   <div className="detail-item">
                     <Mail size={14} />
                     <a href={`mailto:${teammate.email}`} className="email-link">{teammate.email}</a>
+                  </div>
+                  <div className="detail-item">
+                    <Phone size={14} />
+                    <a href={`tel:${teammate.phone}`} className="phone-link">{teammate.phone || 'N/A'}</a>
                   </div>
                 </div>
 
