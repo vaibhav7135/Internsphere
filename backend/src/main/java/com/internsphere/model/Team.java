@@ -18,9 +18,7 @@ public class Team {
     @Column(name = "mentor_id")
     private String mentorId;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "team_members", joinColumns = @JoinColumn(name = "team_id"))
-    @Column(name = "student_id")
+    @Transient
     private List<String> studentIds = new ArrayList<>();
 
     public Team() {}

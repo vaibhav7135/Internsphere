@@ -1,8 +1,10 @@
 package com.internsphere.controller;
 
 import com.internsphere.model.Team;
+import com.internsphere.model.TeamMember;
 import com.internsphere.model.User;
 import com.internsphere.repository.TeamRepository;
+import com.internsphere.repository.TeamMemberRepository;
 import com.internsphere.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,9 @@ public class TeamController {
     private TeamRepository teamRepository;
 
     @Autowired
+    private TeamMemberRepository teamMemberRepository;
+
+    @Autowired
     private UserRepository userRepository;
 
     // Create or Update Team
@@ -28,7 +33,21 @@ public class TeamController {
         if (team.getName() == null || team.getName().trim().isEmpty()) {
             return ResponseEntity.badRequest().body("Team name is required");
         }
+        
+        // 1. Save main team entity
         Team saved = teamRepository.save(team);
+
+        // 2. Refresh/save associated team members in secondary PK-enforced table
+        teamMemberRepository.deleteByTeamId(saved.getDbId());
+        
+        if (team.getStudentIds() != null && !team.getStudentIds().isEmpty()) {
+            List<TeamMember> membersToSave = team.getStudentIds().stream()
+                    .map(sid -> new TeamMember(saved.getDbId(), sid))
+                    .collect(Collectors.toList());
+            teamMemberRepository.saveAll(membersToSave);
+        }
+
+        saved.setStudentIds(team.getStudentIds());
         return ResponseEntity.ok(saved);
     }
 
@@ -36,15 +55,34 @@ public class TeamController {
     @GetMapping("/mentor/{mentorId}")
     public ResponseEntity<List<Team>> getTeamsByMentor(@PathVariable String mentorId) {
         List<Team> teams = teamRepository.findByMentorId(mentorId);
+        
+        // Populate transient studentIds field for frontend JSON compatibility
+        for (Team t : teams) {
+            List<String> sids = teamMemberRepository.findByTeamId(t.getDbId()).stream()
+                    .map(TeamMember::getStudentId)
+                    .collect(Collectors.toList());
+            t.setStudentIds(sids);
+        }
         return ResponseEntity.ok(teams);
     }
 
     // Get all teams a student belongs to
     @GetMapping("/student/{studentId}")
     public ResponseEntity<List<Team>> getTeamsByStudent(@PathVariable String studentId) {
-        List<Team> studentTeams = teamRepository.findAll().stream()
-                .filter(t -> t.getStudentIds().contains(studentId))
+        // Load team IDs from student member mapping links
+        List<Long> teamIds = teamMemberRepository.findByStudentId(studentId).stream()
+                .map(TeamMember::getTeamId)
                 .collect(Collectors.toList());
+
+        List<Team> studentTeams = teamRepository.findAllById(teamIds);
+        
+        // Populate transient studentIds field
+        for (Team t : studentTeams) {
+            List<String> sids = teamMemberRepository.findByTeamId(t.getDbId()).stream()
+                    .map(TeamMember::getStudentId)
+                    .collect(Collectors.toList());
+            t.setStudentIds(sids);
+        }
         return ResponseEntity.ok(studentTeams);
     }
 
@@ -53,6 +91,7 @@ public class TeamController {
     public ResponseEntity<?> deleteTeam(@PathVariable Long id) {
         if (teamRepository.existsById(id)) {
             teamRepository.deleteById(id);
+            teamMemberRepository.deleteByTeamId(id);
             return ResponseEntity.ok("Team deleted successfully");
         }
         return ResponseEntity.notFound().build();
@@ -61,13 +100,14 @@ public class TeamController {
     // Get all teammate profiles for a student
     @GetMapping("/student/{studentId}/teammates")
     public ResponseEntity<List<User>> getTeammates(@PathVariable String studentId) {
-        List<Team> studentTeams = teamRepository.findAll().stream()
-                .filter(t -> t.getStudentIds().contains(studentId))
+        List<Long> teamIds = teamMemberRepository.findByStudentId(studentId).stream()
+                .map(TeamMember::getTeamId)
                 .collect(Collectors.toList());
 
-        List<String> teammateIds = studentTeams.stream()
-                .flatMap(t -> t.getStudentIds().stream())
-                .filter(id -> !id.equals(studentId))
+        List<String> teammateIds = teamMemberRepository.findAll().stream()
+                .filter(link -> teamIds.contains(link.getTeamId()))
+                .map(TeamMember::getStudentId)
+                .filter(sid -> !sid.equals(studentId))
                 .distinct()
                 .collect(Collectors.toList());
 
