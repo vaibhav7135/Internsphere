@@ -176,4 +176,20 @@ public class UserController {
         public String getExperience() { return experience; }
         public void setExperience(String experience) { this.experience = experience; }
     }
+
+    @PostMapping("/student/{id}/reset-password")
+    public ResponseEntity<?> resetPassword(@PathVariable String id, @RequestBody java.util.Map<String, String> body) {
+        Optional<User> userOpt = userRepository.findById(id);
+        if (userOpt.isPresent()) {
+            User student = userOpt.get();
+            String newPassword = body.get("password");
+            if (newPassword == null || newPassword.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Password cannot be empty");
+            }
+            student.setPassword(newPassword);
+            userRepository.save(student);
+            return ResponseEntity.ok("Password reset successfully");
+        }
+        return ResponseEntity.status(404).body("Student profile not found");
+    }
 }
