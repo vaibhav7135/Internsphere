@@ -10,6 +10,7 @@ import {
   CheckCircle,
   XCircle,
   Users,
+  Key,
 } from 'lucide-react';
 import './ManageStudents.css';
 
@@ -107,6 +108,34 @@ const ManageStudents = () => {
       } catch (err) {
         console.error('Error deleting student:', err);
       }
+    }
+  };
+
+  const handleResetPassword = async (student) => {
+    const newPass = window.prompt(`Enter new password for ${student.name}:`, "password");
+    if (newPass === null) return;
+    if (!newPass.trim()) {
+      alert("Password cannot be empty!");
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/users/student/${student.id}/reset-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ password: newPass })
+      });
+
+      if (response.ok) {
+        alert(`Successfully reset password for ${student.name}!`);
+      } else {
+        const msg = await response.text();
+        alert(msg || "Failed to reset password.");
+      }
+    } catch (err) {
+      alert("Failed to connect to backend server.");
     }
   };
 
@@ -255,6 +284,9 @@ const ManageStudents = () => {
                 </td>
                 <td>
                   <div className="manage-students__actions">
+                    <button className="btn btn--ghost btn--sm" onClick={() => handleResetPassword(student)} title="Reset Password" style={{ color: 'var(--primary)', marginRight: '8px' }}>
+                      <Key size={14} /> Reset Password
+                    </button>
                     <button className="btn btn--ghost btn--sm manage-students__delete-btn" onClick={() => handleDelete(student.id)} title="Delete">
                       <Trash2 size={14} /> Delete
                     </button>
