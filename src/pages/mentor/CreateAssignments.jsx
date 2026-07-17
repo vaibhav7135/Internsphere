@@ -8,6 +8,8 @@ import {
   CheckCircle,
   ClipboardList,
   FileText,
+  Edit,
+  X,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import './CreateAssignments.css';
@@ -23,6 +25,15 @@ const CreateAssignments = () => {
     maxMarks: 100,
   });
   const [showSuccess, setShowSuccess] = useState(false);
+
+  // Edit Assignment State
+  const [editingAssignment, setEditingAssignment] = useState(null);
+  const [editFormData, setEditFormData] = useState({
+    title: '',
+    description: '',
+    week: 1,
+    dueDate: '',
+  });
 
   const fetchAssignments = async () => {
     try {
@@ -106,6 +117,58 @@ const CreateAssignments = () => {
     }
   };
 
+  // Edit Handlers
+  const handleStartEdit = (assignment) => {
+    setEditingAssignment(assignment);
+    setEditFormData({
+      title: assignment.title,
+      description: assignment.description || '',
+      week: assignment.week,
+      dueDate: assignment.dueDate,
+    });
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditFormData({
+      ...editFormData,
+      [name]: name === 'week' ? Number(value) : value,
+    });
+  };
+
+  const handleSaveEdit = async (e) => {
+    e.preventDefault();
+    if (!editFormData.title || !editFormData.dueDate) return;
+
+    try {
+      const response = await fetch('/api/mentor/assignments', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          originalTitle: editingAssignment.title,
+          title: editFormData.title,
+          description: editFormData.description,
+          dueDate: editFormData.dueDate,
+          week: Number(editFormData.week),
+          domain: mentor?.enrolledProgram,
+        }),
+      });
+
+      if (response.ok) {
+        setEditingAssignment(null);
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 3000);
+        fetchAssignments();
+      } else {
+        alert('Failed to update published assignment.');
+      }
+    } catch (err) {
+      console.error('Error updating assignment:', err);
+    }
+  };
+
   return (
     <div className="create-assignments">
       {/* Header */}
@@ -123,7 +186,7 @@ const CreateAssignments = () => {
       {showSuccess && (
         <div className="create-assignments__success animate-fadeInDown">
           <CheckCircle size={18} />
-          Assignment created and published to all students!
+          Assignments successfully saved and updated!
         </div>
       )}
 
@@ -224,6 +287,7 @@ const CreateAssignments = () => {
                 <th>Due Date</th>
                 <th>Max Marks</th>
                 <th>Submissions</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -264,11 +328,20 @@ const CreateAssignments = () => {
                       {assignment.submissions} student{assignment.submissions !== 1 ? 's' : ''}
                     </span>
                   </td>
+                  <td>
+                    <button
+                      className="btn btn--ghost btn--sm"
+                      onClick={() => handleStartEdit(assignment)}
+                      style={{ color: 'var(--primary)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                    >
+                      <Edit size={14} /> Edit
+                    </button>
+                  </td>
                 </tr>
               ))}
               {assignments.length === 0 && (
                 <tr>
-                  <td colSpan="5" className="create-assignments__empty" style={{ textAlign: 'center', padding: '30px', color: 'var(--text-secondary)' }}>
+                  <td colSpan="6" className="create-assignments__empty" style={{ textAlign: 'center', padding: '30px', color: 'var(--text-secondary)' }}>
                     No assignments published for {mentor?.enrolledProgram} yet.
                   </td>
                 </tr>
@@ -277,6 +350,83 @@ const CreateAssignments = () => {
           </table>
         </div>
       </div>
+
+      {/* Edit Modal Popup */}
+      {editingAssignment && (
+        <div className="modal-backdrop" onClick={() => setEditingAssignment(null)}>
+          <div className="modal modal--lg" onClick={(e) => e.stopPropagation()}>
+            <div className="modal__header">
+              <h3 className="modal__title">Edit Published Assignment</h3>
+              <button className="modal__close" onClick={() => setEditingAssignment(null)}>
+                <X size={20} />
+              </button>
+            </div>
+            <form onSubmit={handleSaveEdit}>
+              <div className="form-group">
+                <label className="form-label">Assignment Title</label>
+                <input
+                  type="text"
+                  name="title"
+                  className="form-input"
+                  value={editFormData.title}
+                  onChange={handleEditChange}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Description</label>
+                <textarea
+                  name="description"
+                  className="form-input form-textarea"
+                  value={editFormData.description}
+                  onChange={handleEditChange}
+                  rows={4}
+                />
+              </div>
+
+              <div className="create-assignments__form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                <div className="form-group">
+                  <label className="form-label">Week Number</label>
+                  <select
+                    name="week"
+                    className="form-input form-select"
+                    value={editFormData.week}
+                    onChange={handleEditChange}
+                  >
+                    {Array.from({ length: 8 }, (_, i) => (
+                      <option key={i + 1} value={i + 1}>
+                        Week {i + 1}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Due Date</label>
+                  <input
+                    type="date"
+                    name="dueDate"
+                    className="form-input"
+                    value={editFormData.dueDate}
+                    onChange={handleEditChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px', borderTop: '1px solid var(--border-color)', paddingTop: '15px' }}>
+                <button type="button" className="btn btn--ghost" onClick={() => setEditingAssignment(null)}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn--primary">
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
