@@ -85,6 +85,37 @@ public class MentorController {
         return ResponseEntity.ok("Assignment published to " + count + " students of " + request.getDomain());
     }
 
+    // Edit Published Assignment
+    @PutMapping("/assignments")
+    public ResponseEntity<?> editAssignment(@RequestBody AssignmentEditRequest request) {
+        if (request.getOriginalTitle() == null || request.getOriginalTitle().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Original title is required");
+        }
+
+        List<User> students = userRepository.findByRole("student");
+        int count = 0;
+
+        for (User student : students) {
+            if (request.getDomain().equalsIgnoreCase(student.getEnrolledProgram())) {
+                boolean updated = false;
+                for (Assignment a : student.getAssignments()) {
+                    if (a.getTitle().equalsIgnoreCase(request.getOriginalTitle())) {
+                        a.setTitle(request.getTitle());
+                        a.setDescription(request.getDescription());
+                        a.setDueDate(request.getDueDate());
+                        a.setWeek(request.getWeek());
+                        updated = true;
+                    }
+                }
+                if (updated) {
+                    userRepository.save(student);
+                    count++;
+                }
+            }
+        }
+        return ResponseEntity.ok("Assignment updated for " + count + " students");
+    }
+
     // 3. Publish Assessments
     @PostMapping("/assessments")
     public ResponseEntity<?> publishAssessment(@RequestBody AssessmentPublishRequest request) {
@@ -509,5 +540,32 @@ public class MentorController {
 
         public String getDuration() { return duration; }
         public void setDuration(String duration) { this.duration = duration; }
+    }
+
+    public static class AssignmentEditRequest {
+        private String originalTitle;
+        private String title;
+        private String description;
+        private String dueDate;
+        private Integer week;
+        private String domain;
+
+        public String getOriginalTitle() { return originalTitle; }
+        public void setOriginalTitle(String originalTitle) { this.originalTitle = originalTitle; }
+
+        public String getTitle() { return title; }
+        public void setTitle(String title) { this.title = title; }
+
+        public String getDescription() { return description; }
+        public void setDescription(String description) { this.description = description; }
+
+        public String getDueDate() { return dueDate; }
+        public void setDueDate(String dueDate) { this.dueDate = dueDate; }
+
+        public Integer getWeek() { return week; }
+        public void setWeek(Integer week) { this.week = week; }
+
+        public String getDomain() { return domain; }
+        public void setDomain(String domain) { this.domain = domain; }
     }
 }
