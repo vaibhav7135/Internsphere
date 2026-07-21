@@ -10,6 +10,7 @@ import {
   FileText,
   Edit,
   X,
+  Trash2,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import './CreateAssignments.css';
@@ -166,6 +167,28 @@ const CreateAssignments = () => {
       }
     } catch (err) {
       console.error('Error updating assignment:', err);
+    }
+  };
+
+  const handleDeleteAssignment = async (title) => {
+    if (!window.confirm(`Are you sure you want to delete the assignment "${title}" for all students?`)) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/mentor/assignments?title=${encodeURIComponent(title)}&domain=${encodeURIComponent(mentor?.enrolledProgram)}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 3000);
+        fetchAssignments();
+      } else {
+        alert('Failed to delete assignment.');
+      }
+    } catch (err) {
+      console.error('Error deleting assignment:', err);
     }
   };
 
@@ -329,13 +352,22 @@ const CreateAssignments = () => {
                     </span>
                   </td>
                   <td>
-                    <button
-                      className="btn btn--ghost btn--sm"
-                      onClick={() => handleStartEdit(assignment)}
-                      style={{ color: 'var(--primary)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
-                    >
-                      <Edit size={14} /> Edit
-                    </button>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button
+                        className="btn btn--ghost btn--sm"
+                        onClick={() => handleStartEdit(assignment)}
+                        style={{ color: 'var(--primary)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                      >
+                        <Edit size={14} /> Edit
+                      </button>
+                      <button
+                        className="btn btn--ghost btn--sm"
+                        onClick={() => handleDeleteAssignment(assignment.title)}
+                        style={{ color: 'var(--danger)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                      >
+                        <Trash2 size={14} /> Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
