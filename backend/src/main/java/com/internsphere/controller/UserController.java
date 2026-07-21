@@ -114,6 +114,57 @@ public class UserController {
         student.setAssessments(new ArrayList<>());
         student.setActivities(new ArrayList<>());
 
+        // Find existing assignments and assessments from other students in the same domain
+        List<User> students = userRepository.findByRole("student");
+        java.util.Set<String> uniqueAssignmentTitles = new java.util.HashSet<>();
+        List<Assignment> assignmentsToCopy = new java.util.ArrayList<>();
+
+        for (User u : students) {
+            if (student.getEnrolledProgram() != null && student.getEnrolledProgram().equalsIgnoreCase(u.getEnrolledProgram()) && u.getAssignments() != null) {
+                for (Assignment a : u.getAssignments()) {
+                    if (!uniqueAssignmentTitles.contains(a.getTitle().toLowerCase())) {
+                        uniqueAssignmentTitles.add(a.getTitle().toLowerCase());
+                        
+                        Assignment newAssignment = new Assignment();
+                        newAssignment.setId(a.getId());
+                        newAssignment.setTitle(a.getTitle());
+                        newAssignment.setDescription(a.getDescription());
+                        newAssignment.setDueDate(a.getDueDate());
+                        newAssignment.setWeek(a.getWeek());
+                        newAssignment.setTotalMarks(a.getTotalMarks());
+                        newAssignment.setStatus("pending");
+                        newAssignment.setStudent(student);
+                        assignmentsToCopy.add(newAssignment);
+                    }
+                }
+            }
+        }
+        student.setAssignments(assignmentsToCopy);
+
+        java.util.Set<String> uniqueAssessmentTitles = new java.util.HashSet<>();
+        List<Assessment> assessmentsToCopy = new java.util.ArrayList<>();
+
+        for (User u : students) {
+            if (student.getEnrolledProgram() != null && student.getEnrolledProgram().equalsIgnoreCase(u.getEnrolledProgram()) && u.getAssessments() != null) {
+                for (Assessment a : u.getAssessments()) {
+                    if (!uniqueAssessmentTitles.contains(a.getTitle().toLowerCase())) {
+                        uniqueAssessmentTitles.add(a.getTitle().toLowerCase());
+                        
+                        Assessment newAssessment = new Assessment();
+                        newAssessment.setId(a.getId());
+                        newAssessment.setTitle(a.getTitle());
+                        newAssessment.setTopic(a.getTopic());
+                        newAssessment.setQuestionsCount(a.getQuestionsCount());
+                        newAssessment.setTimeLimit(a.getTimeLimit());
+                        newAssessment.setStatus(assessmentsToCopy.isEmpty() ? "pending" : "locked");
+                        newAssessment.setStudent(student);
+                        assessmentsToCopy.add(newAssessment);
+                    }
+                }
+            }
+        }
+        student.setAssessments(assessmentsToCopy);
+
         Project proj = new Project();
         proj.setStatus("not_assigned");
         student.setProject(proj);
