@@ -82,7 +82,6 @@ public class MentorController {
                 student.getAssignments().add(a);
                 userRepository.save(student);
                 count++;
-            }
         }
         return ResponseEntity.ok("Assignment published to " + count + " students of " + request.getDomain());
     }
@@ -115,7 +114,6 @@ public class MentorController {
                     userRepository.save(student);
                     count++;
                 }
-            }
         }
         return ResponseEntity.ok("Assignment updated for " + count + " students");
     }
@@ -144,7 +142,6 @@ public class MentorController {
                     userRepository.save(student);
                     count += toRemove.size();
                 }
-            }
         }
         return ResponseEntity.ok("Deleted assignment: " + title);
     }
@@ -174,7 +171,6 @@ public class MentorController {
                 student.getAssessments().add(a);
                 userRepository.save(student);
                 count++;
-            }
         }
         return ResponseEntity.ok("Assessment quiz published to " + count + " students of " + request.getDomain());
     }
@@ -323,7 +319,6 @@ public class MentorController {
 
                 userRepository.save(student);
                 count++;
-            }
         }
         return ResponseEntity.ok("Project prompt assigned to " + count + " students of " + request.getDomain());
     }
