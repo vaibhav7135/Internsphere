@@ -4,6 +4,7 @@ import {
   Filter,
   Plus,
   Trash2,
+  Edit,
   X,
   ChevronLeft,
   ChevronRight,
@@ -36,14 +37,26 @@ const ManageStudents = () => {
   const [filterProgram, setFilterProgram] = useState('All Programs');
   const [filterStatus, setFilterStatus] = useState('All Status');
   const [showModal, setShowModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [errorMsg, setErrorMsg] = useState('');
+  const [editErrorMsg, setEditErrorMsg] = useState('');
 
   // Student Form Details
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: 'password',
+    college: '',
+    program: 'Web Development',
+    batch: '',
+    phone: '',
+  });
+
+  const [editData, setEditData] = useState({
+    id: '',
+    name: '',
+    email: '',
     college: '',
     program: 'Web Development',
     batch: '',
@@ -68,6 +81,7 @@ const ManageStudents = () => {
           batch: s.batchId || 'WD-B1-2026',
           progress: s.progress || 0,
           status: s.status || 'pending',
+          phone: s.phone || '',
           enrolledDate: s.enrolledDate || new Date().toISOString().split('T')[0],
           lastLogin: s.lastLogin,
         }));
@@ -136,6 +150,49 @@ const ManageStudents = () => {
       }
     } catch (err) {
       alert("Failed to connect to backend server.");
+    }
+  };
+
+  const handleEditClick = (student) => {
+    setEditData({
+      id: student.id,
+      name: student.name,
+      email: student.email,
+      college: student.college,
+      program: student.program,
+      batch: student.batch,
+      phone: student.phone || '',
+    });
+    setEditErrorMsg('');
+    setShowEditModal(true);
+  };
+
+  const handleEditStudent = async (e) => {
+    e.preventDefault();
+    setEditErrorMsg('');
+    try {
+      const response = await fetch(`/api/users/student/${editData.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: editData.name,
+          email: editData.email,
+          college: editData.college,
+          phone: editData.phone,
+          program: editData.program,
+          batch: editData.batch,
+        }),
+      });
+
+      if (response.ok) {
+        setShowEditModal(false);
+        fetchStudents();
+      } else {
+        const msg = await response.text();
+        setEditErrorMsg(msg || 'Failed to update student profile.');
+      }
+    } catch (err) {
+      setEditErrorMsg('Server offline. Failed to connect to Spring Boot.');
     }
   };
 
@@ -284,11 +341,14 @@ const ManageStudents = () => {
                 </td>
                 <td>
                   <div className="manage-students__actions">
-                    <button className="btn btn--ghost btn--sm" onClick={() => handleResetPassword(student)} title="Reset Password" style={{ color: 'var(--primary)', marginRight: '8px' }}>
-                      <Key size={14} /> Reset Password
+                    <button className="btn btn--ghost btn--sm" onClick={() => handleEditClick(student)} title="Edit Profile" style={{ color: 'var(--primary)', marginRight: '4px' }}>
+                      <Edit size={14} /> Edit
+                    </button>
+                    <button className="btn btn--ghost btn--sm" onClick={() => handleResetPassword(student)} title="Reset Password" style={{ color: 'var(--warning)', marginRight: '4px' }}>
+                      <Key size={14} />
                     </button>
                     <button className="btn btn--ghost btn--sm manage-students__delete-btn" onClick={() => handleDelete(student.id)} title="Delete">
-                      <Trash2 size={14} /> Delete
+                      <Trash2 size={14} />
                     </button>
                   </div>
                 </td>
@@ -428,6 +488,90 @@ const ManageStudents = () => {
               <div className="manage-students__modal-actions">
                 <button type="button" className="btn btn--ghost" onClick={() => { setShowModal(false); setErrorMsg(''); }}>Cancel</button>
                 <button type="submit" className="btn btn--primary">Register Student</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {showEditModal && (
+        <div className="modal-backdrop" onClick={() => { setShowEditModal(false); setEditErrorMsg(''); }}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal__header">
+              <h3 className="modal__title">Edit Student Profile</h3>
+              <button className="modal__close" onClick={() => { setShowEditModal(false); setEditErrorMsg(''); }}>
+                <X size={20} />
+              </button>
+            </div>
+            {editErrorMsg && (
+              <div className="error-alert" style={{ color: 'var(--danger)', backgroundColor: 'var(--danger-bg)', padding: '10px', borderRadius: '4px', marginBottom: '15px', fontSize: '13px' }}>
+                {editErrorMsg}
+              </div>
+            )}
+            <form onSubmit={handleEditStudent}>
+              <div className="form-group">
+                <label className="form-label">Full Name</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={editData.name}
+                  onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Email Address</label>
+                <input
+                  type="email"
+                  className="form-input"
+                  value={editData.email}
+                  onChange={(e) => setEditData({ ...editData, email: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Phone Number</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={editData.phone}
+                  onChange={(e) => setEditData({ ...editData, phone: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">College Name</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={editData.college}
+                  onChange={(e) => setEditData({ ...editData, college: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Internship Domain Program</label>
+                <select
+                  className="form-input form-select"
+                  value={editData.program}
+                  onChange={(e) => setEditData({ ...editData, program: e.target.value })}
+                >
+                  {programs.filter(p => p !== 'All Programs').map(p => (
+                    <option key={p} value={p}>{p}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group">
+                <label className="form-label">Batch ID</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={editData.batch}
+                  onChange={(e) => setEditData({ ...editData, batch: e.target.value })}
+                />
+              </div>
+              <div className="manage-students__modal-actions">
+                <button type="button" className="btn btn--ghost" onClick={() => { setShowEditModal(false); setEditErrorMsg(''); }}>Cancel</button>
+                <button type="submit" className="btn btn--primary">Save Changes</button>
               </div>
             </form>
           </div>

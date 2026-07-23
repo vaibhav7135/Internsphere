@@ -76,6 +76,38 @@ public class UserController {
         return ResponseEntity.status(404).body("User profile not found");
     }
 
+    @PutMapping("/student/{id}")
+    public ResponseEntity<?> updateStudent(@PathVariable String id, @RequestBody UserRequest request) {
+        Optional<User> userOpt = userRepository.findById(id);
+        if (!userOpt.isPresent()) {
+            return ResponseEntity.status(404).body("Student profile not found");
+        }
+
+        User student = userOpt.get();
+
+        // Check if email is changing and ensure it's unique
+        if (request.getEmail() != null && !request.getEmail().equalsIgnoreCase(student.getEmail())) {
+            Optional<User> existing = userRepository.findByEmail(request.getEmail());
+            if (existing.isPresent()) {
+                return ResponseEntity.status(400).body("Email address already registered to another account");
+            }
+            student.setEmail(request.getEmail());
+        }
+
+        if (request.getName() != null && !request.getName().trim().isEmpty()) {
+            student.setName(request.getName());
+            student.setAvatar(request.getName().split(" ")[0].substring(0, 1).toUpperCase() +
+                (request.getName().split(" ").length > 1 ? request.getName().split(" ")[1].substring(0, 1).toUpperCase() : ""));
+        }
+        if (request.getCollege() != null) student.setCollege(request.getCollege());
+        if (request.getPhone() != null) student.setPhone(request.getPhone());
+        if (request.getProgram() != null) student.setEnrolledProgram(request.getProgram());
+        if (request.getBatch() != null) student.setBatchId(request.getBatch());
+
+        User saved = userRepository.save(student);
+        return ResponseEntity.ok(saved);
+    }
+
     @PostMapping("/mentor")
     public ResponseEntity<?> createMentor(@RequestBody MentorRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
