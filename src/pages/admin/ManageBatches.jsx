@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Plus,
   X,
@@ -7,37 +7,113 @@ import {
   UserCheck,
   BookOpen,
   Clock,
+  Trash2,
 } from 'lucide-react';
-import { mockBatches, mockMentors } from '../../data/users';
+import { useAuth } from '../../context/AuthContext';
 import './ManageBatches.css';
 
 const ManageBatches = () => {
-  const [batches, setBatches] = useState(mockBatches);
+  const { user } = useAuth();
+  const [batches, setBatches] = useState([]);
+  const [mentorsList, setMentorsList] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     program: 'Web Development',
     startDate: '',
     endDate: '',
-    mentor: mockMentors[0]?.name || '',
+    mentor: '',
   });
 
-  const handleSubmit = (e) => {
+  const fetchBatches = async () => {
+    try {
+      // First get unique domains from users or just programs list
+      const programs = [
+        'AI & Machine Learning',
+        'UI/UX Design',
+        'Digital Marketing',
+        'Java Full Stack',
+        'Python Development',
+        'Web Development',
+        'React.js',
+        'Spring Boot',
+        'DevOps',
+        'AWS Cloud',
+        'Data Science'
+      ];
+      
+      let allBatches = [];
+      for (const p of programs) {
+        const res = await fetch(`/api/batches?domain=${encodeURIComponent(p)}`);
+        if (res.ok) {
+          const pb = await res.json();
+          allBatches = [...allBatches, ...pb];
+        }
+      }
+      setBatches(allBatches);
+    } catch (err) {
+      console.error('Failed to fetch batches:', err);
+    }
+  };
+
+  const fetchMentors = async () => {
+    try {
+      const res = await fetch('/api/users');
+      if (res.ok) {
+        const users = await res.json();
+        const m = users.filter(u => u.role === 'mentor');
+        setMentorsList(m);
+        if (m.length > 0) {
+          setFormData(prev => ({ ...prev, mentor: m[0].id }));
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch mentors', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchBatches();
+    fetchMentors();
+  }, []);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const programPrefix = formData.program.split(' ').map(w => w[0]).join('').toUpperCase();
-    const batchNum = batches.filter(b => b.program === formData.program).length + 1;
-    const year = new Date(formData.startDate).getFullYear();
-    const newBatch = {
-      id: `${programPrefix}-B${batchNum}-${year}`,
-      program: formData.program,
-      startDate: formData.startDate,
-      endDate: formData.endDate,
-      students: 0,
-      mentor: formData.mentor,
-      status: new Date(formData.startDate) > new Date() ? 'upcoming' : 'active',
-    };
-    setBatches(prev => [...prev, newBatch]);
-    setShowModal(false);
-    setFormData({ program: 'Web Development', startDate: '', endDate: '', mentor: mockMentors[0]?.name || '' });
+    try {
+      const response = await fetch('/api/batches', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          domain: formData.program,
+          startDate: formData.startDate,
+          endDate: formData.endDate,
+          mentorId: formData.mentor,
+        }),
+      });
+      if (response.ok) {
+        setShowModal(false);
+        setFormData({ 
+          program: 'Web Development', 
+          startDate: '', 
+          endDate: '', 
+          mentor: mentorsList[0]?.id || '' 
+        });
+        fetchBatches();
+      }
+    } catch (err) {
+      console.error('Failed to create batch', err);
+    }
+  };
+
+  const handleDelete = async (batchCode) => {
+    if (!window.confirm(`Delete batch ${batchCode}?`)) return;
+    try {
+      const response = await fetch(`/api/batches/${batchCode}`, { method: 'DELETE' });
+      if (response.ok) {
+        fetchBatches();
+      }
+    } catch (err) {
+      console.error('Failed to delete batch', err);
+    }
   };
 
   const getStatusClass = (status) => {
@@ -110,15 +186,17 @@ const ManageBatches = () => {
         <div className="stats-card">
           <div className="stats-card__icon stats-card__icon--yellow"><Users size={22} /></div>
           <div className="stats-card__info">
-            <h3>{batches.reduce((sum, b) => sum + b.students, 0)}</h3>
+            <h3>{batches.reduce((sum, b) => sum + (b.studentCount || 0), 0)}</h3>
             <p>Total Students</p>
           </div>
         </div>
       </div>
 
       <div className="manage-batches__grid animate-fadeInUp delay-2">
-        {batches.map((batch) => (
-          <div className="manage-batches__card card" key={batch.id}>
+        {batches.map((batch) => {
+          const mentor = mentorsList.find(m => m.id === batch.mentorId);
+          return (
+          <div className="manage-batches__card card" key={batch.batchCode}>
             <div className="manage-batches__card-top">
               <div
                 className="manage-batches__card-indicator"
@@ -130,8 +208,13 @@ const ManageBatches = () => {
             </div>
 
             <div className="manage-batches__card-body">
-              <code className="manage-batches__batch-id">{batch.id}</code>
-              <h3 className="manage-batches__program-name">{batch.program}</h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <code className="manage-batches__batch-id">{batch.batchCode}</code>
+                <button className="btn btn--ghost btn--sm" onClick={() => handleDelete(batch.batchCode)} style={{ color: 'var(--danger)', padding: '4px' }}>
+                  <Trash2 size={16} />
+                </button>
+              </div>
+              <h3 className="manage-batches__program-name">{batch.domain}</h3>
 
               <div className="manage-batches__details">
                 <div className="manage-batches__detail-item">
@@ -152,20 +235,20 @@ const ManageBatches = () => {
                   <Users size={15} />
                   <div>
                     <span className="manage-batches__detail-label">Students</span>
-                    <span className="manage-batches__detail-value">{batch.students}</span>
+                    <span className="manage-batches__detail-value">{batch.studentCount || 0}</span>
                   </div>
                 </div>
                 <div className="manage-batches__detail-item">
                   <UserCheck size={15} />
                   <div>
                     <span className="manage-batches__detail-label">Mentor</span>
-                    <span className="manage-batches__detail-value">{batch.mentor}</span>
+                    <span className="manage-batches__detail-value">{mentor?.name || 'Unassigned'}</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        ))}
+        )})}
       </div>
 
       {showModal && (
@@ -215,7 +298,9 @@ const ManageBatches = () => {
                   value={formData.mentor}
                   onChange={(e) => setFormData({ ...formData, mentor: e.target.value })}
                 >
-                  {mockMentors.map(m => <option key={m.id} value={m.name}>{m.name}</option>)}
+                  {mentorsList.filter(m => m.enrolledProgram === formData.program || m.enrolledProgram === 'All Programs' || !m.enrolledProgram).map(m => (
+                    <option key={m.id} value={m.id}>{m.name} ({m.enrolledProgram || 'All Programs'})</option>
+                  ))}
                 </select>
               </div>
               <div className="manage-batches__modal-actions">

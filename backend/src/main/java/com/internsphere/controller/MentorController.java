@@ -59,11 +59,13 @@ public class MentorController {
     // 2. Publish Assignments
     @PostMapping("/assignments")
     public ResponseEntity<?> publishAssignment(@RequestBody AssignmentPublishRequest request) {
-        List<User> students = userRepository.findByRole("student");
+        List<User> students = userRepository.findByRoleAndEnrolledProgram("student", request.getDomain());
         int count = 0;
         
         for (User student : students) {
-            if (request.getDomain().equalsIgnoreCase(student.getEnrolledProgram())) {
+            if (request.getBatchCode() != null && !request.getBatchCode().trim().isEmpty() && !request.getBatchCode().equals(student.getBatchId())) {
+                continue;
+            }
                 Assignment a = new Assignment();
                 // Generate relative assignment ID
                 int maxId = 0;
@@ -92,11 +94,13 @@ public class MentorController {
             return ResponseEntity.badRequest().body("Original title is required");
         }
 
-        List<User> students = userRepository.findByRole("student");
+        List<User> students = userRepository.findByRoleAndEnrolledProgram("student", request.getDomain());
         int count = 0;
 
         for (User student : students) {
-            if (request.getDomain().equalsIgnoreCase(student.getEnrolledProgram())) {
+            if (request.getBatchCode() != null && !request.getBatchCode().trim().isEmpty() && !request.getBatchCode().equals(student.getBatchId())) {
+                continue;
+            }
                 boolean updated = false;
                 for (Assignment a : student.getAssignments()) {
                     if (a.getTitle().equalsIgnoreCase(request.getOriginalTitle())) {
@@ -116,14 +120,45 @@ public class MentorController {
         return ResponseEntity.ok("Assignment updated for " + count + " students");
     }
 
+    // Delete Published Assignment
+    @DeleteMapping("/assignments")
+    public ResponseEntity<?> deleteAssignment(@RequestParam String title, @RequestParam String domain, @RequestParam(required = false) String batchCode) {
+        if (title == null || title.trim().isEmpty() || domain == null || domain.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Title and Domain are required");
+        }
+
+        List<User> students = userRepository.findByRoleAndEnrolledProgram("student", domain);
+        int count = 0;
+        for (User student : students) {
+            if (batchCode != null && !batchCode.trim().isEmpty() && !batchCode.equals(student.getBatchId())) {
+                continue;
+            }
+                List<Assignment> toRemove = new ArrayList<>();
+                for (Assignment a : student.getAssignments()) {
+                    if (a.getTitle().equalsIgnoreCase(title)) {
+                        toRemove.add(a);
+                    }
+                }
+                if (!toRemove.isEmpty()) {
+                    student.getAssignments().removeAll(toRemove);
+                    userRepository.save(student);
+                    count += toRemove.size();
+                }
+            }
+        }
+        return ResponseEntity.ok("Deleted assignment: " + title);
+    }
+
     // 3. Publish Assessments
     @PostMapping("/assessments")
     public ResponseEntity<?> publishAssessment(@RequestBody AssessmentPublishRequest request) {
-        List<User> students = userRepository.findByRole("student");
+        List<User> students = userRepository.findByRoleAndEnrolledProgram("student", request.getDomain());
         int count = 0;
 
         for (User student : students) {
-            if (request.getDomain().equalsIgnoreCase(student.getEnrolledProgram())) {
+            if (request.getBatchCode() != null && !request.getBatchCode().trim().isEmpty() && !request.getBatchCode().equals(student.getBatchId())) {
+                continue;
+            }
                 Assessment a = new Assessment();
                 int maxId = 0;
                 for (Assessment ex : student.getAssessments()) {
@@ -146,11 +181,14 @@ public class MentorController {
 
     // 4. Retrieve Student Submissions
     @GetMapping("/submissions")
-    public ResponseEntity<List<SubmissionDto>> getSubmissions() {
+    public ResponseEntity<List<SubmissionDto>> getSubmissions(@RequestParam(required = false) String batchCode) {
         List<User> students = userRepository.findByRole("student");
         List<SubmissionDto> list = new ArrayList<>();
 
         for (User student : students) {
+            if (batchCode != null && !batchCode.trim().isEmpty() && !batchCode.equals(student.getBatchId())) {
+                continue;
+            }
             for (Assignment a : student.getAssignments()) {
                 if ("submitted".equals(a.getStatus())) {
                     SubmissionDto dto = new SubmissionDto();
@@ -257,11 +295,13 @@ public class MentorController {
     // 8. Assign Project Prompt to all students in a domain
     @PostMapping("/projects/assign")
     public ResponseEntity<?> assignProjectPrompt(@RequestBody ProjectAssignRequest request) {
-        List<User> students = userRepository.findByRole("student");
+        List<User> students = userRepository.findByRoleAndEnrolledProgram("student", request.getDomain());
         int count = 0;
 
         for (User student : students) {
-            if (request.getDomain().equalsIgnoreCase(student.getEnrolledProgram())) {
+            if (request.getBatchCode() != null && !request.getBatchCode().trim().isEmpty() && !request.getBatchCode().equals(student.getBatchId())) {
+                continue;
+            }
                 Project p = student.getProject();
                 if (p == null) {
                     p = new Project();
@@ -344,12 +384,14 @@ public class MentorController {
         private String dueDate;
         private Integer week;
         private String domain;
+        private String batchCode;
 
         public String getTitle() { return title; }
         public String getDescription() { return description; }
         public String getDueDate() { return dueDate; }
         public Integer getWeek() { return week; }
         public String getDomain() { return domain; }
+        public String getBatchCode() { return batchCode; }
     }
 
     public static class AssessmentPublishRequest {
@@ -358,12 +400,14 @@ public class MentorController {
         private Integer questionsCount;
         private Integer timeLimit;
         private String domain;
+        private String batchCode;
 
         public String getTitle() { return title; }
         public String getTopic() { return topic; }
         public Integer getQuestionsCount() { return questionsCount; }
         public Integer getTimeLimit() { return timeLimit; }
         public String getDomain() { return domain; }
+        public String getBatchCode() { return batchCode; }
     }
 
     public static class GradeRequest {
@@ -388,12 +432,14 @@ public class MentorController {
         private String requirements;
         private String deadline;
         private String domain;
+        private String batchCode;
 
         public String getPromptTitle() { return promptTitle; }
         public String getPromptDescription() { return promptDescription; }
         public String getRequirements() { return requirements; }
         public String getDeadline() { return deadline; }
         public String getDomain() { return domain; }
+        public String getBatchCode() { return batchCode; }
     }
 
     public static class SubmissionDto {
@@ -549,6 +595,7 @@ public class MentorController {
         private String dueDate;
         private Integer week;
         private String domain;
+        private String batchCode;
 
         public String getOriginalTitle() { return originalTitle; }
         public void setOriginalTitle(String originalTitle) { this.originalTitle = originalTitle; }
@@ -567,5 +614,8 @@ public class MentorController {
 
         public String getDomain() { return domain; }
         public void setDomain(String domain) { this.domain = domain; }
+        
+        public String getBatchCode() { return batchCode; }
+        public void setBatchCode(String batchCode) { this.batchCode = batchCode; }
     }
 }

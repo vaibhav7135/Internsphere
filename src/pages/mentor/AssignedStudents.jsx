@@ -10,6 +10,7 @@ import {
   Calendar,
   BarChart3,
   Users,
+  Layers,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import './AssignedStudents.css';
@@ -26,6 +27,10 @@ const AssignedStudents = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedStudent, setSelectedStudent] = useState(null);
+
+  // Batch Filter
+  const [batches, setBatches] = useState([]);
+  const [selectedBatch, setSelectedBatch] = useState('all');
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -54,8 +59,20 @@ const AssignedStudents = () => {
         console.error('Failed to fetch assigned students:', err);
       }
     };
+    const fetchBatches = async () => {
+      try {
+        const response = await fetch(`/api/batches/mentor/${mentor?.id}`);
+        if (response.ok) {
+          const data = await response.json();
+          setBatches(data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch batches:', err);
+      }
+    };
     if (mentor) {
       fetchStudents();
+      fetchBatches();
     }
   }, [mentor]);
 
@@ -68,10 +85,12 @@ const AssignedStudents = () => {
 
       const matchesStatus =
         statusFilter === 'all' || student.status === statusFilter;
+        
+      const matchesBatch = selectedBatch === 'all' || student.batchCode === selectedBatch;
 
-      return matchesSearch && matchesStatus;
+      return matchesSearch && matchesStatus && matchesBatch;
     });
-  }, [students, searchQuery, statusFilter]);
+  }, [students, searchQuery, statusFilter, selectedBatch]);
 
   const getProgressColor = (progress) => {
     if (progress >= 80) return 'progress-bar__fill--success';
@@ -109,6 +128,21 @@ const AssignedStudents = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
+        </div>
+        <div className="assigned-students__filter-group">
+          <Layers size={16} />
+          <select
+            className="form-input form-select assigned-students__filter-select"
+            value={selectedBatch}
+            onChange={(e) => setSelectedBatch(e.target.value)}
+          >
+            <option value="all">All Batches</option>
+            {batches.map(b => (
+              <option key={b.batchCode} value={b.batchCode}>
+                {b.batchCode}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="assigned-students__filter-group">
           <Filter size={16} />

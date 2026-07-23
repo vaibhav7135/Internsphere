@@ -114,7 +114,50 @@
   /* Sidebar */
   --sidebar-width: 260px;
   --sidebar-collapsed: 72px;
+  --border-color: #E2E8F0;
+  --bg-hover: #F1F5F9;
 }
+
+[data-theme='dark'] {
+  /* Dark Mode Palette - Deep Midnight Slate/Blue Glimmer */
+  --bg-primary: #0A0E1A;
+  --bg-secondary: #0E1326;
+  --bg-dark: #070A12;
+  --bg-dark-secondary: #0A0E1A;
+  --bg-card: #151C33;
+  --bg-card-glass: rgba(21, 28, 51, 0.8);
+  --border-color: #242E4C;
+  --bg-hover: #1D2644;
+
+  /* Neutral overrides to make existing components dark automatically */
+  --white: #151C33;
+  --gray-50: #0E1326;
+  --gray-100: #1D2644;
+  --gray-200: #242E4C;
+  --gray-300: #3B476F;
+  --gray-400: #5F6E9B;
+  --gray-500: #8C9BBF;
+  --gray-600: #C2CBE5;
+  --gray-700: #E6ECF8;
+  --gray-800: #F3F7FD;
+  --gray-900: #F8FAFC;
+
+  /* Typography color shifts */
+  --text-primary: #ECEFF8;
+  --text-secondary: #8C9BBF;
+  --text-muted: #5F6E9B;
+  
+  /* Primary accents adjust for dark mode */
+  --primary-bg: #1D2E62;
+  --primary-bg-light: #16224B;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+}
+
 
 /* --- Global Reset --- */
 *,

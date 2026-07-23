@@ -10,6 +10,10 @@ const CreateAssessments = () => {
   const [topic, setTopic] = useState('');
   const [timeLimit, setTimeLimit] = useState(20);
 
+  // Batch Selection
+  const [batches, setBatches] = useState([]);
+  const [selectedBatch, setSelectedBatch] = useState('');
+
   // Question Builder States
   const [questions, setQuestions] = useState([
     {
@@ -57,9 +61,22 @@ const CreateAssessments = () => {
     }
   };
 
+  const fetchBatches = async () => {
+    try {
+      const response = await fetch(`/api/batches/mentor/${mentor?.id}`);
+      if (response.ok) {
+        const data = await response.json();
+        setBatches(data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch batches:', err);
+    }
+  };
+
   useEffect(() => {
     if (mentor) {
       fetchAssessments();
+      fetchBatches();
     }
   }, [mentor]);
 
@@ -117,6 +134,7 @@ const CreateAssessments = () => {
           questionsCount: questions.length,
           timeLimit,
           domain: mentor?.enrolledProgram,
+          batchCode: selectedBatch || undefined,
         }),
       });
 
@@ -147,6 +165,22 @@ const CreateAssessments = () => {
           <form onSubmit={handleSaveAssessment} className="card assessment-form">
             <h3>Assessment Parameters</h3>
             <p className="form-subtitle">Define general limits and configurations</p>
+
+            <div className="form-group">
+              <label className="form-label">Target Batch</label>
+              <select
+                className="form-input form-select"
+                value={selectedBatch}
+                onChange={(e) => setSelectedBatch(e.target.value)}
+              >
+                <option value="">All Students (Domain-wide)</option>
+                {batches.map(b => (
+                  <option key={b.batchCode} value={b.batchCode}>
+                    {b.batchCode} ({b.status === 'active' ? 'Active' : 'Upcoming'})
+                  </option>
+                ))}
+              </select>
+            </div>
 
             <div className="form-group">
               <label className="form-label" htmlFor="title">Assessment Title</label>

@@ -27,6 +27,10 @@ const CreateAssignments = () => {
   });
   const [showSuccess, setShowSuccess] = useState(false);
 
+  // Batch Selection
+  const [batches, setBatches] = useState([]);
+  const [selectedBatch, setSelectedBatch] = useState('');
+
   // Edit Assignment State
   const [editingAssignment, setEditingAssignment] = useState(null);
   const [editFormData, setEditFormData] = useState({
@@ -72,9 +76,22 @@ const CreateAssignments = () => {
     }
   };
 
+  const fetchBatches = async () => {
+    try {
+      const response = await fetch(`/api/batches/mentor/${mentor?.id}`);
+      if (response.ok) {
+        const data = await response.json();
+        setBatches(data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch batches:', err);
+    }
+  };
+
   useEffect(() => {
     if (mentor) {
       fetchAssignments();
+      fetchBatches();
     }
   }, [mentor]);
 
@@ -102,6 +119,7 @@ const CreateAssignments = () => {
           dueDate: formData.dueDate,
           week: Number(formData.week),
           domain: mentor?.enrolledProgram,
+          batchCode: selectedBatch || undefined,
         }),
       });
 
@@ -220,6 +238,22 @@ const CreateAssignments = () => {
           New Assignment
         </h2>
         <form onSubmit={handleSubmit} className="create-assignments__form">
+          <div className="form-group">
+            <label className="form-label">Target Batch</label>
+            <select
+              className="form-input form-select"
+              value={selectedBatch}
+              onChange={(e) => setSelectedBatch(e.target.value)}
+            >
+              <option value="">All Students (Domain-wide)</option>
+              {batches.map(b => (
+                <option key={b.batchCode} value={b.batchCode}>
+                  {b.batchCode} ({b.status === 'active' ? 'Active' : 'Upcoming'})
+                </option>
+              ))}
+            </select>
+          </div>
+
           <div className="form-group">
             <label className="form-label">Assignment Title</label>
             <input

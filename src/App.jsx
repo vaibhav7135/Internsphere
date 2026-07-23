@@ -23,6 +23,7 @@ import Profile from './pages/student/Profile';
 import MentorDashboard from './pages/mentor/MentorDashboard';
 import AssignedStudents from './pages/mentor/AssignedStudents';
 import ManageTeams from './pages/mentor/ManageTeams';
+import ManageBatchesMentor from './pages/mentor/ManageBatchesMentor';
 import UploadMaterials from './pages/mentor/UploadMaterials';
 import CreateAssignments from './pages/mentor/CreateAssignments';
 import CreateAssessments from './pages/mentor/CreateAssessments';
@@ -51,6 +52,11 @@ const ScrollToTop = () => {
 };
 
 const App = () => {
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('internsphere_theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  }, []);
+
   return (
     <>
       <ScrollToTop />
@@ -78,6 +84,7 @@ const App = () => {
           <Route path="/mentor/dashboard" element={<MentorDashboard />} />
           <Route path="/mentor/students" element={<AssignedStudents />} />
           <Route path="/mentor/teams" element={<ManageTeams />} />
+          <Route path="/mentor/batches" element={<ManageBatchesMentor />} />
           <Route path="/mentor/materials" element={<UploadMaterials />} />
           <Route path="/mentor/assignments" element={<CreateAssignments />} />
           <Route path="/mentor/assessments" element={<CreateAssessments />} />

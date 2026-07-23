@@ -5,7 +5,7 @@ import {
   FolderUp, BarChart3, Award, CreditCard, User, LogOut,
   Users, Upload, PenTool, MessageSquare, CheckCircle, Settings,
   Briefcase, UserCheck, DollarSign, FileCheck, PieChart,
-  ChevronLeft, ChevronRight, Menu, X, Layers
+  ChevronLeft, ChevronRight, Menu, X, Layers, Sun, Moon
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import './Sidebar.css';
@@ -25,6 +25,7 @@ const menuItems = {
     { path: '/mentor/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { path: '/mentor/students', icon: Users, label: 'Assigned Students' },
     { path: '/mentor/teams', icon: Layers, label: 'Manage Teams' },
+    { path: '/mentor/batches', icon: Layers, label: 'Manage Batches' },
     { path: '/mentor/materials', icon: Upload, label: 'Upload Materials' },
     { path: '/mentor/assignments', icon: PenTool, label: 'Create Assignments' },
     { path: '/mentor/assessments', icon: ClipboardCheck, label: 'Create Assessments' },
@@ -47,6 +48,7 @@ const menuItems = {
 
 const Sidebar = ({ collapsed, setCollapsed }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [theme, setTheme] = useState(localStorage.getItem('internsphere_theme') || 'light');
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -56,6 +58,13 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
   const handleLogout = () => {
     logout();
     navigate('/');
+  };
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    localStorage.setItem('internsphere_theme', newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
   };
 
   return (
@@ -114,6 +123,16 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
         </nav>
 
         <div className="sidebar__footer">
+          <button
+            className="sidebar__item"
+            onClick={toggleTheme}
+            title={collapsed ? (theme === 'light' ? 'Dark Theme' : 'Light Theme') : ''}
+            style={{ marginBottom: '4px' }}
+          >
+            {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+            {!collapsed && <span>{theme === 'light' ? 'Dark Theme' : 'Light Theme'}</span>}
+          </button>
+
           <button
             className="sidebar__item sidebar__item--logout"
             onClick={handleLogout}
