@@ -1,5 +1,6 @@
 import { Routes, Route, useLocation } from 'react-router';
 import { useEffect } from 'react';
+import ReactGA from 'react-ga4';
 
 // Layout
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -42,14 +43,19 @@ import GenerateCertificates from './pages/admin/GenerateCertificates';
 import VerifyCertificatesAdmin from './pages/admin/VerifyCertificatesAdmin';
 import ViewReports from './pages/admin/ViewReports';
 
-// Scroll to top on route change
+// Scroll to top and track pageviews on route change
 const ScrollToTop = () => {
   const { pathname } = useLocation();
   useEffect(() => {
     window.scrollTo(0, 0);
+    // Track Google Analytics pageview
+    ReactGA.send({ hitType: "pageview", page: pathname });
   }, [pathname]);
   return null;
 };
+
+// Initialize Google Analytics with the Measurement ID
+ReactGA.initialize('G-BQ611LK4QN');
 
 const App = () => {
   useEffect(() => {
