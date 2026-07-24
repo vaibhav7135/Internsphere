@@ -168,6 +168,18 @@ public class MentorController {
                 a.setTimeLimit(request.getTimeLimit());
                 a.setStatus(student.getAssessments().isEmpty() ? "pending" : "locked");
                 a.setStudent(student);
+
+                if (request.getQuestions() != null) {
+                    for (QuestionDto qDto : request.getQuestions()) {
+                        AssessmentQuestion aq = new AssessmentQuestion();
+                        aq.setQuestionText(qDto.getQuestionText());
+                        aq.setOptions(qDto.getOptions());
+                        aq.setCorrectAnswer(qDto.getCorrectAnswer());
+                        aq.setAssessment(a);
+                        a.getQuestions().add(aq);
+                    }
+                }
+
                 student.getAssessments().add(a);
                 userRepository.save(student);
                 count++;
@@ -389,6 +401,21 @@ public class MentorController {
         public String getBatchCode() { return batchCode; }
     }
 
+    public static class QuestionDto {
+        private String questionText;
+        private List<String> options;
+        private Integer correctAnswer;
+
+        public String getQuestionText() { return questionText; }
+        public void setQuestionText(String questionText) { this.questionText = questionText; }
+
+        public List<String> getOptions() { return options; }
+        public void setOptions(List<String> options) { this.options = options; }
+
+        public Integer getCorrectAnswer() { return correctAnswer; }
+        public void setCorrectAnswer(Integer correctAnswer) { this.correctAnswer = correctAnswer; }
+    }
+
     public static class AssessmentPublishRequest {
         private String title;
         private String topic;
@@ -396,6 +423,7 @@ public class MentorController {
         private Integer timeLimit;
         private String domain;
         private String batchCode;
+        private List<QuestionDto> questions;
 
         public String getTitle() { return title; }
         public String getTopic() { return topic; }
@@ -403,6 +431,8 @@ public class MentorController {
         public Integer getTimeLimit() { return timeLimit; }
         public String getDomain() { return domain; }
         public String getBatchCode() { return batchCode; }
+        public List<QuestionDto> getQuestions() { return questions; }
+        public void setQuestions(List<QuestionDto> questions) { this.questions = questions; }
     }
 
     public static class GradeRequest {

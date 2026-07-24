@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ClipboardCheck, Play, Award, CheckCircle, Clock, X, AlertTriangle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { domainContent } from '../../data/domainContent';
@@ -7,7 +7,7 @@ import './Assessments.css';
 const sampleQuizQuestions = [
   {
     id: 1,
-    question: 'Which of the following is correct about modular programming?',
+    questionText: 'Which of the following is correct about modular programming?',
     options: [
       'It isolates code into reusable and standalone modules',
       'It requires all code to reside in a single file',
@@ -18,7 +18,7 @@ const sampleQuizQuestions = [
   },
   {
     id: 2,
-    question: 'What is a core benefit of testing applications?',
+    questionText: 'What is a core benefit of testing applications?',
     options: [
       'It guarantees there will be zero future enhancements',
       'It reduces manual verification efforts and ensures regression safety',
@@ -29,7 +29,7 @@ const sampleQuizQuestions = [
   },
   {
     id: 3,
-    question: 'What does environment variable configuration support?',
+    questionText: 'What does environment variable configuration support?',
     options: [
       'Storing secrets outside of source control code repositories',
       'Speeding up browser rendering engines',
@@ -44,8 +44,6 @@ const Assessments = () => {
   const { user } = useAuth();
 
   const domain = user?.enrolledProgram || 'Web Development';
-  const rawAssessments = domainContent[domain]?.assessments || domainContent['Web Development'].assessments;
-
   const { submitAssessment } = useAuth();
   const assessments = user?.assessments || [];
 
@@ -55,6 +53,40 @@ const Assessments = () => {
   const [selectedOptions, setSelectedOptions] = useState({});
   const [quizSubmitted, setQuizSubmitted] = useState(false);
   const [calculatedScore, setCalculatedScore] = useState(0);
+  
+  // Timer state (seconds)
+  const [timeLeft, setTimeLeft] = useState(0);
+
+  // Derived active questions
+  const activeQuestions = selectedAssessment?.questions?.length > 0 
+    ? selectedAssessment.questions 
+    : sampleQuizQuestions;
+
+  // Auto-submit timer effect
+  useEffect(() => {
+    let timer;
+    if (showQuizModal && !quizSubmitted && timeLeft > 0) {
+      timer = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            // Time is up! Auto-submit
+            handleAutoSubmit();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [showQuizModal, quizSubmitted, timeLeft]);
+
+  // Use a ref-less approach by relying on the current state inside the effect
+  const handleAutoSubmit = () => {
+    handleQuizSubmit();
+  };
 
   const handleStartQuiz = (assessment) => {
     setSelectedAssessment(assessment);
@@ -62,15 +94,16 @@ const Assessments = () => {
     setSelectedOptions({});
     setQuizSubmitted(false);
     setCalculatedScore(0);
+    setTimeLeft(assessment.timeLimit * 60); // convert minutes to seconds
     setShowQuizModal(true);
   };
 
   const handleOptionSelect = (optionIdx) => {
-    setSelectedOptions({ ...selectedOptions, [currentQuestion]: optionIdx });
+    setSelectedOptions(prev => ({ ...prev, [currentQuestion]: optionIdx }));
   };
 
   const handleNextQuestion = () => {
-    if (currentQuestion < sampleQuizQuestions.length - 1) {
+    if (currentQuestion < activeQuestions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     }
   };
@@ -83,13 +116,13 @@ const Assessments = () => {
 
   const handleQuizSubmit = () => {
     let correctCounts = 0;
-    sampleQuizQuestions.forEach((q, idx) => {
+    activeQuestions.forEach((q, idx) => {
       if (selectedOptions[idx] === q.correctAnswer) {
         correctCounts += 1;
       }
     });
 
-    const percent = Math.round((correctCounts / sampleQuizQuestions.length) * 100);
+    const percent = Math.round((correctCounts / activeQuestions.length) * 100);
     setCalculatedScore(percent);
     setQuizSubmitted(true);
 
@@ -100,6 +133,12 @@ const Assessments = () => {
   const closeQuizModal = () => {
     setShowQuizModal(false);
     setSelectedAssessment(null);
+  };
+
+  const formatTime = (totalSeconds) => {
+    const m = Math.floor(totalSeconds / 60);
+    const s = totalSeconds % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
   return (
@@ -170,21 +209,23 @@ const Assessments = () => {
               <div className="quiz-content">
                 <div className="quiz-progress">
                   <div className="quiz-progress-label">
-                    <span>Question {currentQuestion + 1} of {sampleQuizQuestions.length}</span>
-                    <span>Time remaining: {selectedAssessment.timeLimit} mins</span>
+                    <span>Question {currentQuestion + 1} of {activeQuestions.length}</span>
+                    <span className={timeLeft <= 60 ? 'text-danger' : ''}>
+                      Time remaining: {formatTime(timeLeft)}
+                    </span>
                   </div>
                   <div className="progress-bar">
                     <div
                       className="progress-bar__fill"
-                      style={{ width: `${((currentQuestion + 1) / sampleQuizQuestions.length) * 100}%` }}
+                      style={{ width: `${((currentQuestion + 1) / activeQuestions.length) * 100}%` }}
                     />
                   </div>
                 </div>
 
                 <div className="quiz-question-box card">
-                  <p className="quiz-question">{sampleQuizQuestions[currentQuestion].question}</p>
+                  <p className="quiz-question">{activeQuestions[currentQuestion].questionText}</p>
                   <div className="quiz-options">
-                    {sampleQuizQuestions[currentQuestion].options.map((opt, optIdx) => (
+                    {activeQuestions[currentQuestion].options.map((opt, optIdx) => (
                       <button
                         key={optIdx}
                         className={`quiz-option-btn ${selectedOptions[currentQuestion] === optIdx ? 'quiz-option-btn--selected' : ''}`}
@@ -206,7 +247,7 @@ const Assessments = () => {
                     Previous
                   </button>
 
-                  {currentQuestion < sampleQuizQuestions.length - 1 ? (
+                  {currentQuestion < activeQuestions.length - 1 ? (
                     <button
                       className="btn btn--primary btn--sm"
                       disabled={selectedOptions[currentQuestion] === undefined}
@@ -218,7 +259,7 @@ const Assessments = () => {
                     <button
                       className="btn btn--success btn--sm"
                       disabled={selectedOptions[currentQuestion] === undefined}
-                      onClick={handleQuizSubmit}
+                      onClick={() => handleQuizSubmit()}
                     >
                       Submit Assessment
                     </button>
@@ -244,7 +285,7 @@ const Assessments = () => {
                   </p>
                 </div>
                 <div className="quiz-results-breakdown">
-                  <p>Correct Answers: {sampleQuizQuestions.filter((q, idx) => selectedOptions[idx] === q.correctAnswer).length} / {sampleQuizQuestions.length}</p>
+                  <p>Correct Answers: {activeQuestions.filter((q, idx) => selectedOptions[idx] === q.correctAnswer).length} / {activeQuestions.length}</p>
                 </div>
                 <button className="btn btn--primary" onClick={closeQuizModal}>
                   Close Window

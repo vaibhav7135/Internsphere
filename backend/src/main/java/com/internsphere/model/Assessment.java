@@ -24,6 +24,9 @@ public class Assessment {
     @JsonIgnore
     private User student;
 
+    @OneToMany(mappedBy = "assessment", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private java.util.List<AssessmentQuestion> questions = new java.util.ArrayList<>();
+
     // Constructors
     public Assessment() {}
 
@@ -54,4 +57,7 @@ public class Assessment {
 
     public User getStudent() { return student; }
     public void setStudent(User student) { this.student = student; }
+
+    public java.util.List<AssessmentQuestion> getQuestions() { return questions; }
+    public void setQuestions(java.util.List<AssessmentQuestion> questions) { this.questions = questions; }
 }

@@ -135,6 +135,7 @@ const CreateAssessments = () => {
           timeLimit,
           domain: mentor?.enrolledProgram,
           batchCode: selectedBatch || undefined,
+          questions,
         }),
       });
 
