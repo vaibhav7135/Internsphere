@@ -21,8 +21,10 @@ public class AuthController {
         if (userOpt.isPresent()) {
             User user = userOpt.get();
             if (user.getPassword().equals(request.getPassword())) {
-                // Update last login timestamp
-                String currentTimestamp = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date());
+                // Update last login timestamp in IST (Asia/Kolkata) with 12-hour AM/PM format
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd hh:mm a");
+                sdf.setTimeZone(java.util.TimeZone.getTimeZone("Asia/Kolkata"));
+                String currentTimestamp = sdf.format(new java.util.Date());
                 user.setLastLogin(currentTimestamp);
                 userRepository.save(user);
 
