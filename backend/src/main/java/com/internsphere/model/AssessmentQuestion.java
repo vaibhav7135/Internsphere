@@ -1,7 +1,11 @@
 package com.internsphere.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -15,10 +19,9 @@ public class AssessmentQuestion {
     @Column(columnDefinition = "TEXT")
     private String questionText;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "assessment_question_options", joinColumns = @JoinColumn(name = "question_id"))
-    @Column(name = "option_text", columnDefinition = "TEXT")
-    private List<String> options;
+    @JsonIgnore
+    @Column(name = "options_json", columnDefinition = "TEXT")
+    private String optionsJson;
 
     private Integer correctAnswer;
 
@@ -26,6 +29,10 @@ public class AssessmentQuestion {
     @JoinColumn(name = "assessment_db_id")
     @JsonIgnore
     private Assessment assessment;
+
+    @Transient
+    @JsonIgnore
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     // Constructors
     public AssessmentQuestion() {}
@@ -37,8 +44,28 @@ public class AssessmentQuestion {
     public String getQuestionText() { return questionText; }
     public void setQuestionText(String questionText) { this.questionText = questionText; }
 
-    public List<String> getOptions() { return options; }
-    public void setOptions(List<String> options) { this.options = options; }
+    @JsonProperty("options")
+    @Transient
+    public List<String> getOptions() {
+        if (optionsJson == null || optionsJson.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+        try {
+            return mapper.readValue(optionsJson, new TypeReference<List<String>>() {});
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
+    @JsonProperty("options")
+    @Transient
+    public void setOptions(List<String> options) {
+        try {
+            this.optionsJson = mapper.writeValueAsString(options != null ? options : new ArrayList<>());
+        } catch (Exception e) {
+            this.optionsJson = "[]";
+        }
+    }
 
     public Integer getCorrectAnswer() { return correctAnswer; }
     public void setCorrectAnswer(Integer correctAnswer) { this.correctAnswer = correctAnswer; }
