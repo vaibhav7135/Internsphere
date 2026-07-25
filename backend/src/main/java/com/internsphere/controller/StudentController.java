@@ -106,6 +106,18 @@ public class StudentController {
         }
 
         Assessment assessment = student.getAssessments().get(foundIdx);
+        if (assessment.getDueDate() != null && !assessment.getDueDate().trim().isEmpty()) {
+            try {
+                java.time.LocalDate due = java.time.LocalDate.parse(assessment.getDueDate().trim());
+                java.time.LocalDate today = java.time.LocalDate.now(java.time.ZoneId.of("Asia/Kolkata"));
+                if (today.isAfter(due)) {
+                    return ResponseEntity.status(400).body("Assessment due date (" + assessment.getDueDate() + ") has passed. This assessment is now locked.");
+                }
+            } catch (Exception e) {
+                // Ignore parsing errors if dueDate format is non-standard
+            }
+        }
+
         assessment.setStatus("completed");
         assessment.setScore(request.getScore());
 

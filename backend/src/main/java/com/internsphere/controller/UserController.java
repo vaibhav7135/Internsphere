@@ -188,8 +188,19 @@ public class UserController {
                         newAssessment.setTopic(a.getTopic());
                         newAssessment.setQuestionsCount(a.getQuestionsCount());
                         newAssessment.setTimeLimit(a.getTimeLimit());
+                        newAssessment.setDueDate(a.getDueDate());
                         newAssessment.setStatus(assessmentsToCopy.isEmpty() ? "pending" : "locked");
                         newAssessment.setStudent(student);
+                        if (a.getQuestions() != null) {
+                            for (com.internsphere.model.AssessmentQuestion aq : a.getQuestions()) {
+                                com.internsphere.model.AssessmentQuestion newAq = new com.internsphere.model.AssessmentQuestion();
+                                newAq.setQuestionText(aq.getQuestionText());
+                                newAq.setOptions(aq.getOptions());
+                                newAq.setCorrectAnswer(aq.getCorrectAnswer());
+                                newAq.setAssessment(newAssessment);
+                                newAssessment.getQuestions().add(newAq);
+                            }
+                        }
                         assessmentsToCopy.add(newAssessment);
                     }
                 }

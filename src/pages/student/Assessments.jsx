@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ClipboardCheck, Play, Award, CheckCircle, Clock, X, AlertTriangle } from 'lucide-react';
+import { ClipboardCheck, Play, Award, CheckCircle, Clock, X, AlertTriangle, Calendar } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { domainContent } from '../../data/domainContent';
 import './Assessments.css';
@@ -46,6 +46,12 @@ const Assessments = () => {
   const domain = user?.enrolledProgram || 'Web Development';
   const { submitAssessment } = useAuth();
   const assessments = user?.assessments || [];
+
+  const isExpired = (a) => {
+    if (!a.dueDate || a.status === 'completed') return false;
+    const today = new Date().toISOString().split('T')[0];
+    return today > a.dueDate;
+  };
 
   const [showQuizModal, setShowQuizModal] = useState(false);
   const [selectedAssessment, setSelectedAssessment] = useState(null);
@@ -149,50 +155,63 @@ const Assessments = () => {
       </div>
 
       <div className="assessments__grid">
-        {assessments.map((a, idx) => (
-          <div
-            key={a.id}
-            className={`assessments__card card animate-fadeInUp delay-${Math.min(idx + 1, 5)} ${
-              a.status === 'locked' ? 'assessments__card--locked' : ''
-            }`}
-          >
-            <div className="assessments__card-header">
-              <span className={`badge ${
-                a.status === 'completed' ? 'badge--success' : a.status === 'pending' ? 'badge--warning' : 'badge--primary'
-              }`}>
-                {a.status === 'completed' ? 'Completed' : a.status === 'pending' ? 'Available' : 'Locked'}
-              </span>
-              <div className="assessments__card-time">
-                <Clock size={14} />
-                <span>{a.timeLimit} mins</span>
-              </div>
-            </div>
-
-            <h3 className="assessments__card-title">{a.title}</h3>
-            <p className="assessments__card-topic"><strong>Topics:</strong> {a.topic}</p>
-
-            <div className="assessments__card-footer">
-              <div className="assessments__card-info">
-                <span>{a.questionsCount} Questions</span>
-              </div>
-
-              {a.status === 'completed' ? (
-                <div className="assessments__card-score">
-                  <Award size={16} className="text-gradient" />
-                  <span className="assessments__score-num">{a.score}%</span>
+        {assessments.map((a, idx) => {
+          const expired = isExpired(a);
+          return (
+            <div
+              key={a.id}
+              className={`assessments__card card animate-fadeInUp delay-${Math.min(idx + 1, 5)} ${
+                a.status === 'locked' || expired ? 'assessments__card--locked' : ''
+              }`}
+            >
+              <div className="assessments__card-header">
+                <span className={`badge ${
+                  a.status === 'completed' ? 'badge--success' : expired ? 'badge--danger' : a.status === 'pending' ? 'badge--warning' : 'badge--primary'
+                }`}>
+                  {a.status === 'completed' ? 'Completed' : expired ? 'Expired' : a.status === 'pending' ? 'Available' : 'Locked'}
+                </span>
+                <div className="assessments__card-time">
+                  <Clock size={14} />
+                  <span>{a.timeLimit} mins</span>
                 </div>
-              ) : a.status === 'pending' ? (
-                <button className="btn btn--primary btn--sm" onClick={() => handleStartQuiz(a)}>
-                  <Play size={12} /> Start Quiz
-                </button>
-              ) : (
-                <button className="btn btn--secondary btn--sm" disabled>
-                  Locked
-                </button>
+              </div>
+
+              <h3 className="assessments__card-title">{a.title}</h3>
+              <p className="assessments__card-topic"><strong>Topics:</strong> {a.topic}</p>
+              {a.dueDate && (
+                <p className="assessments__card-topic" style={{ color: expired ? 'var(--danger)' : 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Calendar size={13} />
+                  <strong>Due:</strong> {a.dueDate} {expired && '(Expired)'}
+                </p>
               )}
+
+              <div className="assessments__card-footer">
+                <div className="assessments__card-info">
+                  <span>{a.questionsCount} Questions</span>
+                </div>
+
+                {a.status === 'completed' ? (
+                  <div className="assessments__card-score">
+                    <Award size={16} className="text-gradient" />
+                    <span className="assessments__score-num">{a.score}%</span>
+                  </div>
+                ) : expired ? (
+                  <button className="btn btn--secondary btn--sm" disabled>
+                    Expired
+                  </button>
+                ) : a.status === 'pending' ? (
+                  <button className="btn btn--primary btn--sm" onClick={() => handleStartQuiz(a)}>
+                    <Play size={12} /> Start Quiz
+                  </button>
+                ) : (
+                  <button className="btn btn--secondary btn--sm" disabled>
+                    Locked
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {showQuizModal && selectedAssessment && (

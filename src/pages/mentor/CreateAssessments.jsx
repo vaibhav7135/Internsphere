@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ClipboardCheck, Plus, Trash, Clock, Save } from 'lucide-react';
+import { ClipboardCheck, Plus, Trash, Clock, Save, Edit2, Trash2, Calendar, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import './CreateAssessments.css';
 
@@ -9,6 +9,8 @@ const CreateAssessments = () => {
   const [title, setTitle] = useState('');
   const [topic, setTopic] = useState('');
   const [timeLimit, setTimeLimit] = useState(20);
+  const [dueDate, setDueDate] = useState('');
+  const [editingOriginalTitle, setEditingOriginalTitle] = useState(null);
 
   // Batch Selection
   const [batches, setBatches] = useState([]);
@@ -46,6 +48,8 @@ const CreateAssessments = () => {
                 topic: a.topic,
                 questionsCount: a.questionsCount,
                 timeLimit: a.timeLimit,
+                dueDate: a.dueDate || '',
+                questions: a.questions || [],
                 submissions: 0,
               });
             }
@@ -123,33 +127,94 @@ const CreateAssessments = () => {
     }
 
     try {
-      const response = await fetch('/api/mentor/assessments', {
-        method: 'POST',
+      const url = '/api/mentor/assessments';
+      const method = editingOriginalTitle ? 'PUT' : 'POST';
+      const payload = {
+        title,
+        topic,
+        questionsCount: questions.length,
+        timeLimit,
+        dueDate,
+        domain: mentor?.enrolledProgram,
+        batchCode: selectedBatch || undefined,
+        questions,
+      };
+      if (editingOriginalTitle) {
+        payload.originalTitle = editingOriginalTitle;
+      }
+
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          title,
-          topic,
-          questionsCount: questions.length,
-          timeLimit,
-          domain: mentor?.enrolledProgram,
-          batchCode: selectedBatch || undefined,
-          questions,
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
         setTitle('');
         setTopic('');
         setTimeLimit(20);
+        setDueDate('');
         setQuestions([]);
+        setEditingOriginalTitle(null);
         fetchAssessments();
       } else {
-        alert('Failed to publish assessment quiz.');
+        alert(editingOriginalTitle ? 'Failed to update assessment.' : 'Failed to publish assessment quiz.');
       }
     } catch (err) {
-      console.error('Error publishing assessment:', err);
+      console.error('Error saving assessment:', err);
+    }
+  };
+
+  const handleStartEdit = (a) => {
+    setEditingOriginalTitle(a.title);
+    setTitle(a.title);
+    setTopic(a.topic);
+    setTimeLimit(a.timeLimit || 20);
+    setDueDate(a.dueDate || '');
+    setQuestions(
+      a.questions && a.questions.length > 0
+        ? a.questions.map((q) => ({
+            questionText: q.questionText,
+            options: q.options || [],
+            correctAnswer: q.correctAnswer || 0,
+          }))
+        : []
+    );
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingOriginalTitle(null);
+    setTitle('');
+    setTopic('');
+    setTimeLimit(20);
+    setDueDate('');
+    setQuestions([]);
+  };
+
+  const handleDeleteAssessment = async (title) => {
+    if (!window.confirm(`Are you sure you want to delete the assessment "${title}" for all students?`)) {
+      return;
+    }
+    try {
+      const response = await fetch(
+        `/api/mentor/assessments?title=${encodeURIComponent(title)}&domain=${encodeURIComponent(mentor?.enrolledProgram || '')}`,
+        {
+          method: 'DELETE',
+        }
+      );
+      if (response.ok) {
+        if (editingOriginalTitle === title) {
+          handleCancelEdit();
+        }
+        fetchAssessments();
+      } else {
+        alert('Failed to delete assessment.');
+      }
+    } catch (err) {
+      console.error('Error deleting assessment:', err);
     }
   };
 
@@ -209,20 +274,36 @@ const CreateAssessments = () => {
               />
             </div>
 
-            <div className="form-group">
-              <label className="form-label" htmlFor="timeLimit">Time Limit (Minutes)</label>
-              <div className="input-with-icon-box">
-                <Clock size={16} className="input-box-icon" />
-                <input
-                  type="number"
-                  id="timeLimit"
-                  className="form-input input-box-with-icon"
-                  required
-                  min={5}
-                  max={120}
-                  value={timeLimit}
-                  onChange={(e) => setTimeLimit(parseInt(e.target.value))}
-                />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+              <div className="form-group">
+                <label className="form-label" htmlFor="timeLimit">Time Limit (Mins)</label>
+                <div className="input-with-icon-box">
+                  <Clock size={16} className="input-box-icon" />
+                  <input
+                    type="number"
+                    id="timeLimit"
+                    className="form-input input-box-with-icon"
+                    required
+                    min={5}
+                    max={120}
+                    value={timeLimit}
+                    onChange={(e) => setTimeLimit(parseInt(e.target.value))}
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label" htmlFor="dueDate">Due Date</label>
+                <div className="input-with-icon-box">
+                  <Calendar size={16} className="input-box-icon" />
+                  <input
+                    type="date"
+                    id="dueDate"
+                    className="form-input input-box-with-icon"
+                    value={dueDate}
+                    onChange={(e) => setDueDate(e.target.value)}
+                  />
+                </div>
               </div>
             </div>
 
@@ -301,9 +382,25 @@ const CreateAssessments = () => {
               </div>
             )}
 
-            <button type="submit" className="btn btn--primary btn--full submit-assessment-btn">
-              <Save size={16} /> Save and Launch Assessment
-            </button>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              {editingOriginalTitle && (
+                <button
+                  type="button"
+                  className="btn btn--ghost"
+                  style={{ flex: '1', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                  onClick={handleCancelEdit}
+                >
+                  <X size={16} /> Cancel Edit
+                </button>
+              )}
+              <button
+                type="submit"
+                className="btn btn--primary submit-assessment-btn"
+                style={{ flex: editingOriginalTitle ? '2' : '1' }}
+              >
+                <Save size={16} /> {editingOriginalTitle ? 'Update Assessment' : 'Save and Launch Assessment'}
+              </button>
+            </div>
           </form>
         </div>
 
@@ -321,9 +418,32 @@ const CreateAssessments = () => {
                     <span className="badge badge--success">{a.submissions} Completed</span>
                   </div>
                   <p><strong>Topic:</strong> {a.topic}</p>
+                  {a.dueDate && (
+                    <p style={{ margin: '4px 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                      <strong>Due:</strong> {a.dueDate}
+                    </p>
+                  )}
                   <div className="sidebar-assessment-meta">
                     <span>{a.questionsCount} Questions</span>
                     <span>{a.timeLimit} Mins</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '10px', borderTop: '1px solid var(--border-color)', paddingTop: '8px' }}>
+                    <button
+                      type="button"
+                      className="btn btn--ghost btn--sm"
+                      onClick={() => handleStartEdit(a)}
+                      style={{ color: 'var(--primary)', display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '4px 8px' }}
+                    >
+                      <Edit2 size={14} /> Edit
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn--ghost btn--sm"
+                      onClick={() => handleDeleteAssessment(a.title)}
+                      style={{ color: 'var(--danger)', display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '4px 8px' }}
+                    >
+                      <Trash2 size={14} /> Delete
+                    </button>
                   </div>
                 </div>
               ))}

@@ -167,6 +167,7 @@ public class MentorController {
                 a.setTopic(request.getTopic());
                 a.setQuestionsCount(request.getQuestionsCount());
                 a.setTimeLimit(request.getTimeLimit());
+                a.setDueDate(request.getDueDate());
                 a.setStatus(student.getAssessments().isEmpty() ? "pending" : "locked");
                 a.setStudent(student);
 
@@ -193,6 +194,84 @@ public class MentorController {
                 msg += " | Cause: " + e.getCause().getClass().getName() + ": " + e.getCause().getMessage();
             }
             return ResponseEntity.status(500).body(msg);
+        }
+    }
+
+    @PutMapping("/assessments")
+    public ResponseEntity<?> editAssessment(@RequestBody AssessmentEditRequest request) {
+        if (request.getOriginalTitle() == null || request.getOriginalTitle().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Original title is required");
+        }
+        try {
+            List<User> students = userRepository.findByRoleAndEnrolledProgram("student", request.getDomain());
+            int count = 0;
+
+            for (User student : students) {
+                if (request.getBatchCode() != null && !request.getBatchCode().trim().isEmpty() && !request.getBatchCode().equals(student.getBatchId())) {
+                    continue;
+                }
+                boolean updated = false;
+                for (Assessment a : student.getAssessments()) {
+                    if (a.getTitle().equalsIgnoreCase(request.getOriginalTitle())) {
+                        a.setTitle(request.getTitle());
+                        if (request.getTopic() != null) a.setTopic(request.getTopic());
+                        if (request.getTimeLimit() != null) a.setTimeLimit(request.getTimeLimit());
+                        a.setDueDate(request.getDueDate());
+                        if (request.getQuestions() != null && !request.getQuestions().isEmpty()) {
+                            a.getQuestions().clear();
+                            for (QuestionDto qDto : request.getQuestions()) {
+                                AssessmentQuestion aq = new AssessmentQuestion();
+                                aq.setQuestionText(qDto.getQuestionText());
+                                aq.setOptions(qDto.getOptions());
+                                aq.setCorrectAnswer(qDto.getCorrectAnswer());
+                                aq.setAssessment(a);
+                                a.getQuestions().add(aq);
+                            }
+                            a.setQuestionsCount(request.getQuestions().size());
+                        }
+                        updated = true;
+                    }
+                }
+                if (updated) {
+                    userRepository.save(student);
+                    count++;
+                }
+            }
+            return ResponseEntity.ok("Assessment updated for " + count + " students");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error updating assessment: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/assessments")
+    public ResponseEntity<?> deleteAssessment(@RequestParam String title, @RequestParam String domain, @RequestParam(required = false) String batchCode) {
+        if (title == null || title.trim().isEmpty() || domain == null || domain.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Title and Domain are required");
+        }
+        try {
+            List<User> students = userRepository.findByRoleAndEnrolledProgram("student", domain);
+            int count = 0;
+            for (User student : students) {
+                if (batchCode != null && !batchCode.trim().isEmpty() && !batchCode.equals(student.getBatchId())) {
+                    continue;
+                }
+                List<Assessment> toRemove = new ArrayList<>();
+                for (Assessment a : student.getAssessments()) {
+                    if (a.getTitle().equalsIgnoreCase(title)) {
+                        toRemove.add(a);
+                    }
+                }
+                if (!toRemove.isEmpty()) {
+                    student.getAssessments().removeAll(toRemove);
+                    userRepository.save(student);
+                    count += toRemove.size();
+                }
+            }
+            return ResponseEntity.ok("Deleted assessment: " + title);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error deleting assessment: " + e.getMessage());
         }
     }
 
@@ -430,6 +509,7 @@ public class MentorController {
         private String topic;
         private Integer questionsCount;
         private Integer timeLimit;
+        private String dueDate;
         private String domain;
         private String batchCode;
         private List<QuestionDto> questions;
@@ -438,8 +518,37 @@ public class MentorController {
         public String getTopic() { return topic; }
         public Integer getQuestionsCount() { return questionsCount; }
         public Integer getTimeLimit() { return timeLimit; }
+        public String getDueDate() { return dueDate; }
         public String getDomain() { return domain; }
         public String getBatchCode() { return batchCode; }
+        public List<QuestionDto> getQuestions() { return questions; }
+        public void setQuestions(List<QuestionDto> questions) { this.questions = questions; }
+    }
+
+    public static class AssessmentEditRequest {
+        private String originalTitle;
+        private String title;
+        private String topic;
+        private Integer timeLimit;
+        private String dueDate;
+        private String domain;
+        private String batchCode;
+        private List<QuestionDto> questions;
+
+        public String getOriginalTitle() { return originalTitle; }
+        public void setOriginalTitle(String originalTitle) { this.originalTitle = originalTitle; }
+        public String getTitle() { return title; }
+        public void setTitle(String title) { this.title = title; }
+        public String getTopic() { return topic; }
+        public void setTopic(String topic) { this.topic = topic; }
+        public Integer getTimeLimit() { return timeLimit; }
+        public void setTimeLimit(Integer timeLimit) { this.timeLimit = timeLimit; }
+        public String getDueDate() { return dueDate; }
+        public void setDueDate(String dueDate) { this.dueDate = dueDate; }
+        public String getDomain() { return domain; }
+        public void setDomain(String domain) { this.domain = domain; }
+        public String getBatchCode() { return batchCode; }
+        public void setBatchCode(String batchCode) { this.batchCode = batchCode; }
         public List<QuestionDto> getQuestions() { return questions; }
         public void setQuestions(List<QuestionDto> questions) { this.questions = questions; }
     }

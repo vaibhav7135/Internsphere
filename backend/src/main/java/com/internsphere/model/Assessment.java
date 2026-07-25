@@ -16,6 +16,7 @@ public class Assessment {
     private String topic;
     private Integer questionsCount;
     private Integer timeLimit;
+    private String dueDate;
     private String status = "locked"; // "locked", "pending", "completed"
     private Integer score;
 
@@ -48,6 +49,9 @@ public class Assessment {
 
     public Integer getTimeLimit() { return timeLimit; }
     public void setTimeLimit(Integer timeLimit) { this.timeLimit = timeLimit; }
+
+    public String getDueDate() { return dueDate; }
+    public void setDueDate(String dueDate) { this.dueDate = dueDate; }
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
