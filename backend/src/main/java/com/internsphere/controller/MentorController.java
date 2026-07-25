@@ -149,13 +149,14 @@ public class MentorController {
     // 3. Publish Assessments
     @PostMapping("/assessments")
     public ResponseEntity<?> publishAssessment(@RequestBody AssessmentPublishRequest request) {
-        List<User> students = userRepository.findByRoleAndEnrolledProgram("student", request.getDomain());
-        int count = 0;
+        try {
+            List<User> students = userRepository.findByRoleAndEnrolledProgram("student", request.getDomain());
+            int count = 0;
 
-        for (User student : students) {
-            if (request.getBatchCode() != null && !request.getBatchCode().trim().isEmpty() && !request.getBatchCode().equals(student.getBatchId())) {
-                continue;
-            }
+            for (User student : students) {
+                if (request.getBatchCode() != null && !request.getBatchCode().trim().isEmpty() && !request.getBatchCode().equals(student.getBatchId())) {
+                    continue;
+                }
                 Assessment a = new Assessment();
                 int maxId = 0;
                 for (Assessment ex : student.getAssessments()) {
@@ -183,8 +184,16 @@ public class MentorController {
                 student.getAssessments().add(a);
                 userRepository.save(student);
                 count++;
+            }
+            return ResponseEntity.ok("Assessment quiz published to " + count + " students of " + request.getDomain());
+        } catch (Exception e) {
+            e.printStackTrace();
+            String msg = "Error: " + e.getClass().getName() + ": " + e.getMessage();
+            if (e.getCause() != null) {
+                msg += " | Cause: " + e.getCause().getClass().getName() + ": " + e.getCause().getMessage();
+            }
+            return ResponseEntity.status(500).body(msg);
         }
-        return ResponseEntity.ok("Assessment quiz published to " + count + " students of " + request.getDomain());
     }
 
     // 4. Retrieve Student Submissions
