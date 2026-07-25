@@ -121,14 +121,14 @@ public class StudentController {
         assessment.setStatus("completed");
         assessment.setScore(request.getScore());
 
-        // Unlock next assessment if passed (score >= 80)
-        if (request.getScore() >= 80 && foundIdx + 1 < student.getAssessments().size()) {
+        // Unlock next assessment if passed (score >= 60)
+        if (request.getScore() >= 60 && foundIdx + 1 < student.getAssessments().size()) {
             student.getAssessments().get(foundIdx + 1).setStatus("pending");
         }
 
         Activity act = new Activity();
         act.setId(System.currentTimeMillis());
-        act.setText((request.getScore() >= 80 ? "Passed assessment: " : "Attempted assessment: ") + 
+        act.setText((request.getScore() >= 60 ? "Passed assessment: " : "Attempted assessment: ") + 
                     assessment.getTitle() + " (Score: " + request.getScore() + "%)");
         act.setTime("Just now");
         act.setType("assessment");
@@ -186,7 +186,7 @@ public class StudentController {
 
         int assessmentsPassed = 0;
         for (Assessment a : student.getAssessments()) {
-            if ("completed".equals(a.getStatus()) && a.getScore() != null && a.getScore() >= 80) {
+            if ("completed".equals(a.getStatus()) && a.getScore() != null && a.getScore() >= 60) {
                 assessmentsPassed++;
             }
         }

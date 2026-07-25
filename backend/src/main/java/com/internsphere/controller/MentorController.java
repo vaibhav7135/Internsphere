@@ -433,7 +433,7 @@ public class MentorController {
 
         int assessmentsPassed = 0;
         for (Assessment a : student.getAssessments()) {
-            if ("completed".equals(a.getStatus()) && a.getScore() != null && a.getScore() >= 80) {
+            if ("completed".equals(a.getStatus()) && a.getScore() != null && a.getScore() >= 60) {
                 assessmentsPassed++;
             }
         }

@@ -296,10 +296,10 @@ const Assessments = () => {
                   <label>Your Score</label>
                   <h2>{calculatedScore}%</h2>
                   <p className="status-label">
-                    {calculatedScore >= 80 ? (
+                    {calculatedScore >= 60 ? (
                       <span className="badge badge--success">PASS</span>
                     ) : (
-                      <span className="badge badge--danger">FAIL (Needs 80% to pass)</span>
+                      <span className="badge badge--danger">FAIL (Needs 60% to pass)</span>
                     )}
                   </p>
                 </div>
