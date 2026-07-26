@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { ClipboardCheck, Plus, Trash, Clock, Save, Edit2, Trash2, Calendar, X } from 'lucide-react';
+import { ClipboardCheck, Plus, Trash, Clock, Save, Edit2, Trash2, Calendar, X, Sparkles, FileText, Zap, BookOpen } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { questionBank, parseBulkQuestions } from '../../data/questionBank';
 import './CreateAssessments.css';
 
 const CreateAssessments = () => {
@@ -27,6 +28,13 @@ const CreateAssessments = () => {
   const [currentQText, setCurrentQText] = useState('');
   const [currentOptions, setCurrentOptions] = useState(['', '', '', '']);
   const [correctOptionIdx, setCorrectOptionIdx] = useState(0);
+
+  // Bulk Import & AI Bank States
+  const [builderMode, setBuilderMode] = useState('manual'); // 'manual' | 'bulk' | 'preset'
+  const [bulkText, setBulkText] = useState('');
+  const [selectedBankTopic, setSelectedBankTopic] = useState(Object.keys(questionBank)[0]);
+  const [bankCount, setBankCount] = useState(5);
+  const [importSuccessMsg, setImportSuccessMsg] = useState('');
 
   const fetchAssessments = async () => {
     try {
@@ -117,6 +125,32 @@ const CreateAssessments = () => {
 
   const handleRemoveQuestion = (idx) => {
     setQuestions(questions.filter((_, i) => i !== idx));
+  };
+
+  const handleBulkImport = () => {
+    const parsed = parseBulkQuestions(bulkText);
+    if (parsed.length === 0) {
+      alert("Could not parse any valid questions. Please check the formatting example!");
+      return;
+    }
+    setQuestions([...questions, ...parsed]);
+    setBulkText('');
+    setBuilderMode('manual');
+    setImportSuccessMsg(`Successfully imported ${parsed.length} questions!`);
+    setTimeout(() => setImportSuccessMsg(''), 5000);
+  };
+
+  const handlePresetGenerate = () => {
+    const bank = questionBank[selectedBankTopic] || [];
+    const selectedQs = bank.slice(0, bankCount);
+    if (selectedQs.length === 0) {
+      alert("No questions available for this topic.");
+      return;
+    }
+    setQuestions([...questions, ...selectedQs]);
+    setBuilderMode('manual');
+    setImportSuccessMsg(`Successfully generated and added ${selectedQs.length} questions from "${selectedBankTopic}"!`);
+    setTimeout(() => setImportSuccessMsg(''), 5000);
   };
 
   const handleSaveAssessment = async (e) => {
@@ -309,52 +343,183 @@ const CreateAssessments = () => {
 
             {/* Question Builder */}
             <div className="question-builder card card--flat">
-              <h4>Question Builder</h4>
-              <p className="form-subtitle">Assemble multiple-choice questions</p>
-
-              <div className="form-group">
-                <label className="form-label">Question Text</label>
-                <textarea
-                  className="form-input form-textarea form-textarea--sm"
-                  placeholder="Enter the question text here..."
-                  value={currentQText}
-                  onChange={(e) => setCurrentQText(e.target.value)}
-                />
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '10px' }}>
+                <div>
+                  <h4 style={{ margin: 0 }}>Question Builder</h4>
+                  <p className="form-subtitle" style={{ margin: 0 }}>Choose how to assemble test questions</p>
+                </div>
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    className={`btn btn--sm ${builderMode === 'manual' ? 'btn--primary' : 'btn--ghost'}`}
+                    style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                    onClick={() => setBuilderMode('manual')}
+                  >
+                    ✏️ Manual Entry
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn btn--sm ${builderMode === 'bulk' ? 'btn--primary' : 'btn--ghost'}`}
+                    style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                    onClick={() => setBuilderMode('bulk')}
+                  >
+                    ⚡ Bulk Paste / Import
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn btn--sm ${builderMode === 'preset' ? 'btn--primary' : 'btn--ghost'}`}
+                    style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                    onClick={() => setBuilderMode('preset')}
+                  >
+                    ✨ AI Question Bank
+                  </button>
+                </div>
               </div>
 
-              <div className="builder-options-grid">
-                {currentOptions.map((opt, optIdx) => (
-                  <div key={optIdx} className="form-group">
-                    <label className="form-label">Option {String.fromCharCode(65 + optIdx)}</label>
-                    <input
-                      type="text"
-                      className="form-input"
-                      placeholder={`Enter option ${String.fromCharCode(65 + optIdx)}`}
-                      value={opt}
-                      onChange={(e) => handleOptionChange(optIdx, e.target.value)}
+              <hr style={{ border: 'none', borderTop: '1px solid var(--border-color)', margin: '12px 0 16px 0' }} />
+
+              {builderMode === 'manual' && (
+                <>
+                  <div className="form-group">
+                    <label className="form-label">Question Text</label>
+                    <textarea
+                      className="form-input form-textarea form-textarea--sm"
+                      placeholder="Enter the question text here..."
+                      value={currentQText}
+                      onChange={(e) => setCurrentQText(e.target.value)}
                     />
                   </div>
-                ))}
-              </div>
 
-              <div className="form-group">
-                <label className="form-label">Correct Option Selector</label>
-                <select
-                  className="form-input form-select"
-                  value={correctOptionIdx}
-                  onChange={(e) => setCorrectOptionIdx(parseInt(e.target.value))}
-                >
-                  <option value={0}>Option A</option>
-                  <option value={1}>Option B</option>
-                  <option value={2}>Option C</option>
-                  <option value={3}>Option D</option>
-                </select>
-              </div>
+                  <div className="builder-options-grid">
+                    {currentOptions.map((opt, optIdx) => (
+                      <div key={optIdx} className="form-group">
+                        <label className="form-label">Option {String.fromCharCode(65 + optIdx)}</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          placeholder={`Enter option ${String.fromCharCode(65 + optIdx)}`}
+                          value={opt}
+                          onChange={(e) => handleOptionChange(optIdx, e.target.value)}
+                        />
+                      </div>
+                    ))}
+                  </div>
 
-              <button type="button" className="btn btn--secondary btn--sm" onClick={handleAddQuestion}>
-                <Plus size={14} /> Add Question to Test
-              </button>
+                  <div className="form-group">
+                    <label className="form-label">Correct Option Selector</label>
+                    <select
+                      className="form-input form-select"
+                      value={correctOptionIdx}
+                      onChange={(e) => setCorrectOptionIdx(parseInt(e.target.value))}
+                    >
+                      <option value={0}>Option A</option>
+                      <option value={1}>Option B</option>
+                      <option value={2}>Option C</option>
+                      <option value={3}>Option D</option>
+                    </select>
+                  </div>
+
+                  <button type="button" className="btn btn--secondary btn--sm" onClick={handleAddQuestion}>
+                    <Plus size={14} /> Add Question to Test
+                  </button>
+                </>
+              )}
+
+              {builderMode === 'bulk' && (
+                <div className="bulk-import-section animate-fadeInUp">
+                  <div style={{ backgroundColor: 'var(--bg-secondary)', padding: '12px', borderRadius: '8px', marginBottom: '14px', borderLeft: '4px solid var(--primary)' }}>
+                    <p style={{ margin: '0 0 6px 0', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                      💡 Tip: Paste raw questions from Word, Google Docs, or ChatGPT directly!
+                    </p>
+                    <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)', whiteSpace: 'pre-line' }}>
+                      {`Format Example:
+1. What is React?
+A) A UI library *
+B) A database
+C) An operating system
+D) A compiler
+
+(Mark the correct answer option with an asterisk * or type (correct) next to it)`}
+                    </p>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Paste Raw Text Questions</label>
+                    <textarea
+                      className="form-input form-textarea"
+                      style={{ minHeight: '160px', fontFamily: 'monospace', fontSize: '0.85rem' }}
+                      placeholder="Paste your numbered questions and options here..."
+                      value={bulkText}
+                      onChange={(e) => setBulkText(e.target.value)}
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    className="btn btn--primary btn--sm"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                    onClick={handleBulkImport}
+                  >
+                    <Zap size={14} /> Parse & Import All Questions
+                  </button>
+                </div>
+              )}
+
+              {builderMode === 'preset' && (
+                <div className="preset-bank-section animate-fadeInUp">
+                  <div style={{ backgroundColor: 'var(--bg-secondary)', padding: '12px', borderRadius: '8px', marginBottom: '14px', borderLeft: '4px solid var(--success)' }}>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-primary)' }}>
+                      ✨ <strong>Instant Assessment Generator:</strong> Select a curated domain topic and instantly populate your test with verified technical questions!
+                    </p>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '15px', marginBottom: '15px' }}>
+                    <div className="form-group" style={{ margin: 0 }}>
+                      <label className="form-label">Select Domain Topic Bank</label>
+                      <select
+                        className="form-input form-select"
+                        value={selectedBankTopic}
+                        onChange={(e) => setSelectedBankTopic(e.target.value)}
+                      >
+                        {Object.keys(questionBank).map((topicKey) => (
+                          <option key={topicKey} value={topicKey}>{topicKey}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="form-group" style={{ margin: 0 }}>
+                      <label className="form-label">Question Count</label>
+                      <select
+                        className="form-input form-select"
+                        value={bankCount}
+                        onChange={(e) => setBankCount(parseInt(e.target.value))}
+                      >
+                        <option value={3}>3 Questions</option>
+                        <option value={5}>5 Questions</option>
+                        <option value={8}>8 Questions</option>
+                        <option value={10}>10 Questions (Full)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="btn btn--primary btn--sm"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: 'var(--success)' }}
+                    onClick={handlePresetGenerate}
+                  >
+                    <Sparkles size={14} /> Auto-Generate & Add Questions
+                  </button>
+                </div>
+              )}
             </div>
+
+            {/* Success Message Banner */}
+            {importSuccessMsg && (
+              <div className="badge badge--success animate-fadeInUp" style={{ display: 'block', padding: '12px 16px', margin: '16px 0', fontSize: '0.95rem', textAlign: 'center', borderRadius: '8px', border: '1px solid var(--success)' }}>
+                ✔️ {importSuccessMsg}
+              </div>
+            )}
 
             {/* Added Questions List */}
             {questions.length > 0 && (
