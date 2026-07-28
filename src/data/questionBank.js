@@ -418,6 +418,370 @@ export const questionBank = {
       ],
       correctAnswer: 0
     }
+  ],
+  "Java Full Stack & Core Architecture": [
+    {
+      questionText: "What is the main difference between JDK, JRE, and JVM?",
+      options: [
+        "JDK contains JRE and development tools; JRE contains JVM and class libraries; JVM executes byte code",
+        "JVM compiles Java code into machine code; JRE compiles C++ code; JDK is an IDE",
+        "They are three different brand names for the exact same software package",
+        "JRE is only used on mobile phones, while JDK is used exclusively on web servers"
+      ],
+      correctAnswer: 0
+    },
+    {
+      questionText: "What does the keyword 'static' mean when applied to a method in Java?",
+      options: [
+        "The method can only be called once per program execution",
+        "The method belongs to the class itself rather than any specific object instance",
+        "The method cannot be overridden by subclasses and cannot contain variables",
+        "The method runs automatically in a background daemon thread"
+      ],
+      correctAnswer: 1
+    },
+    {
+      questionText: "In Java Collections Framework, what is the primary difference between ArrayList and LinkedList?",
+      options: [
+        "ArrayList uses a dynamic resizable array with fast O(1) random access, whereas LinkedList uses doubly-linked nodes with faster O(1) insertions/deletions at endpoints",
+        "ArrayList can store strings only, whereas LinkedList can store integers only",
+        "LinkedList is thread-safe by default, while ArrayList is synchronized",
+        "ArrayList cannot grow in size once initialized, whereas LinkedList has infinite capacity"
+      ],
+      correctAnswer: 0
+    },
+    {
+      questionText: "What is object-oriented Polymorphism in Java?",
+      options: [
+        "The ability of different classes to inherit from multiple abstract parents simultaneously without interfaces",
+        "The ability of an object to take on many forms, allowing a parent reference variable to point to a child subclass object and execute overridden methods at runtime",
+        "The automatic conversion of strings into primitive integers during mathematical operations",
+        "A security mechanism that hides private database passwords from reflection APIs"
+      ],
+      correctAnswer: 1
+    },
+    {
+      questionText: "What is the purpose of the 'finally' block in Java exception handling?",
+      options: [
+        "To terminate the JVM process immediately upon encountering an error",
+        "To execute cleanup code (like closing database connections or file streams) regardless of whether an exception was thrown or caught",
+        "To re-throw caught exceptions back to the operating system console",
+        "To skip the catch block during unit testing"
+      ],
+      correctAnswer: 1
+    }
+  ],
+  "Spring Boot & Microservices": [
+    {
+      questionText: "What is Dependency Injection (DI) in Spring Boot?",
+      options: [
+        "A design pattern where an external container (Spring IoC Container) injects required dependencies into an object rather than the object creating them itself",
+        "An SQL script that injects mock data into production database tables",
+        "A security vulnerability where attackers inject Spring annotations into HTTP request headers",
+        "A build tool command that downloads Maven JAR files at runtime"
+      ],
+      correctAnswer: 0
+    },
+    {
+      questionText: "What is the role of the @SpringBootApplication annotation?",
+      options: [
+        "It generates HTML templates for frontend user interfaces automatically",
+        "It is a convenience annotation that combines @Configuration, @EnableAutoConfiguration, and @ComponentScan to bootstrap a Spring application",
+        "It encrypts all application.properties database passwords using AES-256",
+        "It forces the built-in Tomcat server to run on port 80 exclusively"
+      ],
+      correctAnswer: 1
+    },
+    {
+      questionText: "How does Spring Data JPA simplify database access?",
+      options: [
+        "By eliminating SQL databases entirely and replacing them with in-memory JSON files",
+        "By automatically generating repository implementations at runtime from interface method names (e.g., findByEmail) without writing boilerplate SQL queries",
+        "By converting Java classes into Python scripts for database migrations",
+        "By disabling database connection pooling to reduce memory consumption"
+      ],
+      correctAnswer: 1
+    },
+    {
+      questionText: "In a Microservices architecture, what is an API Gateway?",
+      options: [
+        "A hardware router that connects office Wi-Fi networks to cloud servers",
+        "A single entry point that routes client requests to appropriate internal microservices, handling cross-cutting concerns like authentication, rate limiting, and SSL termination",
+        "An SQL database table that stores user authentication logs",
+        "A frontend JavaScript library for rendering responsive navigational menus"
+      ],
+      correctAnswer: 1
+    },
+    {
+      questionText: "What is the purpose of Spring Actuator?",
+      options: [
+        "To animate UI components in Spring MVC web pages",
+        "To provide production-ready features like health checks, metrics monitoring, HTTP tracing, and environmental auditing endpoints out of the box",
+        "To automatically restart the database server whenever an exception occurs",
+        "To compile Java source code twice as fast during Gradle builds"
+      ],
+      correctAnswer: 1
+    }
+  ],
+  "UI/UX Design & Figma Mastery": [
+    {
+      questionText: "What is the primary difference between UI (User Interface) and UX (User Experience) design?",
+      options: [
+        "UI focuses on the visual touchpoints, aesthetics, and layout of an interface, whereas UX encompasses the overall journey, functionality, ease of use, and emotional response of the user",
+        "UI is used only for websites, whereas UX is used only for iOS and Android mobile apps",
+        "UI designers write backend JavaScript code, while UX designers manage SQL databases",
+        "There is no difference; UI and UX are exact synonyms in modern product design"
+      ],
+      correctAnswer: 0
+    },
+    {
+      questionText: "In Figma, what is an Auto Layout frame?",
+      options: [
+        "A tool that automatically writes CSS animations for developer handoff",
+        "A dynamic property that allows frames to grow, shrink, and reflow content automatically based on padding, spacing, and sizing rules when items are added or removed",
+        "A plugin that exports Figma canvas designs into playable video games",
+        "An AI assistant that selects color palettes based on brand logos"
+      ],
+      correctAnswer: 1
+    },
+    {
+      questionText: "What is the purpose of a Design System?",
+      options: [
+        "To prevent developers from making any changes to UI code after launch",
+        "To maintain consistency and scalability across products by documenting reusable components, typography scales, color palettes, and interactive design tokens",
+        "To store high-resolution stock photography files in cloud storage",
+        "To replace usability testing by relying on standardized templates"
+      ],
+      correctAnswer: 1
+    },
+    {
+      questionText: "What is the difference between a wireframe and an interactive prototype?",
+      options: [
+        "A wireframe is a low-fidelity static structural blueprint of screen layouts, whereas a prototype is a high-fidelity interactive simulation demonstrating user flows and click behaviors",
+        "A wireframe is always drawn on paper, while a prototype can only be created in Photoshop",
+        "A wireframe includes full database backend integration, while a prototype is frontend-only",
+        "Wireframes are used for branding logos, while prototypes are used for print typography"
+      ],
+      correctAnswer: 0
+    },
+    {
+      questionText: "What is the WCAG contrast ratio recommendation for normal body text to ensure accessibility?",
+      options: [
+        "1:1 (Pure white on pure white)",
+        "At least 4.5:1 contrast ratio against its background",
+        "Exactly 100:1 contrast ratio for all fonts",
+        "Accessibility guidelines do not apply to web font colors"
+      ],
+      correctAnswer: 1
+    }
+  ],
+  "Digital Marketing & SEO Essentials": [
+    {
+      questionText: "What is the difference between Organic SEO and Paid Search (PPC)?",
+      options: [
+        "Organic SEO focuses on optimizing website content and authority to rank naturally in search engine results without paying per click, whereas PPC involves purchasing ad placements at the top of results",
+        "Organic SEO is only used on social media platforms, while PPC is used exclusively on email newsletters",
+        "Organic SEO delivers instant overnight traffic, while PPC takes 6-12 months to show results",
+        "There is no difference; both require bidding on keywords in Google Ads"
+      ],
+      correctAnswer: 0
+    },
+    {
+      questionText: "What is Click-Through Rate (CTR) in digital advertising?",
+      options: [
+        "The total dollar cost required to acquire a single paying customer",
+        "The percentage of people who clicked on an advertisement or search result out of the total number of people who viewed it (Clicks / Impressions * 100)",
+        "The speed at which a website landing page loads on mobile devices",
+        "The number of email newsletter subscribers who forward an email to friends"
+      ],
+      correctAnswer: 1
+    },
+    {
+      questionText: "In SEO, what are backlinks and why are they important?",
+      options: [
+        "Hidden hyperlinks pointing back to the website's own homepage; they increase server storage speed",
+        "Incoming links from external websites pointing to your page; search engines view high-quality backlinks as votes of confidence and domain authority",
+        "Links placed inside customer billing receipts; they reduce credit card processing fees",
+        "Broken links that lead to 404 error pages; they improve website security ratings"
+      ],
+      correctAnswer: 1
+    },
+    {
+      questionText: "What is A/B Testing (Split Testing) in conversion rate optimization?",
+      options: [
+        "Testing a website on two different web browsers simultaneously to check for visual bugs",
+        "Comparing two versions of a webpage, email, or ad (Version A vs. Version B) against each other with live audience traffic to determine which performs better at driving conversions",
+        "Asking internal employees to grade marketing copy on an A to B letter scale",
+        "Splitting advertising budgets equally across all available social media channels"
+      ],
+      correctAnswer: 1
+    },
+    {
+      questionText: "What is the primary goal of Content Marketing?",
+      options: [
+        "Sending unsolicited promotional spam emails to purchased lead lists daily",
+        "Creating and distributing valuable, relevant, and consistent content to attract and engage a clearly defined target audience, ultimately driving profitable customer action",
+        "Replacing all human customer service agents with automated chatbots",
+        "Bidding on competitor brand names in search engine paid advertising auctions"
+      ],
+      correctAnswer: 1
+    }
+  ],
+  "DevOps & CI/CD Pipelines": [
+    {
+      questionText: "What is Continuous Integration (CI) in software engineering?",
+      options: [
+        "The practice of merging developer code changes into a shared central repository frequently (multiple times a day), automatically triggering automated builds and unit tests to catch integration bugs early",
+        "An annual performance review process where developers integrate feedback from managers",
+        "Installing all operating system software updates simultaneously on production servers without backups",
+        "Writing software documentation continuously while coding without compiling"
+      ],
+      correctAnswer: 0
+    },
+    {
+      questionText: "What is the primary benefit of Containerization (e.g., using Docker)?",
+      options: [
+        "It eliminates the need for computer hardware by running software directly on monitor screens",
+        "It packages an application along with all its required libraries, dependencies, and configuration files into a portable container, ensuring consistent execution across development, testing, and production environments",
+        "It automatically writes unit test coverage reports for legacy codebases",
+        "It encrypts database network traffic to prevent unauthorized Wi-Fi sniffing"
+      ],
+      correctAnswer: 1
+    },
+    {
+      questionText: "What is Kubernetes primarily used for?",
+      options: [
+        "Designing vector graphics and SVG logos for web applications",
+        "An open-source container orchestration platform that automates the deployment, scaling, networking, and management of containerized applications across clusters of hosts",
+        "A relational database management engine designed to replace PostgreSQL",
+        "A frontend JavaScript test runner for Jest and Mocha assertions"
+      ],
+      correctAnswer: 1
+    },
+    {
+      questionText: "What is Infrastructure as Code (IaC) using tools like Terraform or Ansible?",
+      options: [
+        "Writing manual step-by-step Word document guides for sysadmins to plug in server cables",
+        "Managing and provisioning computing infrastructure through machine-readable definition files and code rather than physical hardware configuration or interactive configuration tools",
+        "Embedding hardware microchips inside software installation disks",
+        "Converting Python source code into binary assembly instructions for CPUs"
+      ],
+      correctAnswer: 1
+    },
+    {
+      questionText: "In Git version control, what is the difference between 'git merge' and 'git rebase'?",
+      options: [
+        "git merge combines branches by creating a new merge commit preserving branch history, whereas git rebase rewrites commit history by transferring commits from one branch onto the tip of another for a linear project history",
+        "git merge deletes the target branch permanently, whereas git rebase duplicates repository files onto remote servers",
+        "git merge is used for documentation files only, while git rebase is used for compiled source code",
+        "There is no difference; both commands execute the exact same underlying Git algorithm"
+      ],
+      correctAnswer: 0
+    }
+  ],
+  "AWS Cloud Architecture": [
+    {
+      questionText: "What is Amazon EC2 (Elastic Compute Cloud)?",
+      options: [
+        "A managed relational database service supporting MySQL and PostgreSQL engines",
+        "A web service that provides resizable virtual computing capacity (virtual machines or instances) in the AWS cloud",
+        "An object storage service designed to store and retrieve any amount of unstructured files",
+        "A serverless function execution runtime that runs code without provisioning servers"
+      ],
+      correctAnswer: 1
+    },
+    {
+      questionText: "What is the difference between Amazon S3 and Amazon EBS?",
+      options: [
+        "S3 is an object storage service accessed via HTTP/REST APIs ideal for storing backups, static files, and media, whereas EBS provides persistent block-level storage volumes attached directly to EC2 virtual machines like physical hard drives",
+        "S3 is for Windows servers only, whereas EBS is for Linux servers only",
+        "S3 stores data in RAM memory, while EBS stores data on magnetic tape drives",
+        "There is no difference; S3 and EBS are interchangeable names for AWS cloud drives"
+      ],
+      correctAnswer: 0
+    },
+    {
+      questionText: "What is AWS Lambda and how does it work?",
+      options: [
+        "A dedicated physical server rack hosted in an office building managed by AWS technicians",
+        "An event-driven, serverless computing service that lets you run code without provisioning or managing servers, automatically scaling and charging only for the exact compute time consumed during execution",
+        "A private virtual network firewall that blocks unauthorized incoming SQL traffic",
+        "An automated domain name registrar that renews SSL certificates annually"
+      ],
+      correctAnswer: 1
+    },
+    {
+      questionText: "What is Amazon VPC (Virtual Private Cloud)?",
+      options: [
+        "An isolated virtual network section of the AWS cloud where you can launch AWS resources in a custom-defined network topology with control over subnets, routing tables, and internet gateways",
+        "A cloud-based video conferencing tool for engineering teams",
+        "A physical USB security key required to log into the AWS Management Console",
+        "An artificial intelligence model that predicts monthly AWS cloud billing costs"
+      ],
+      correctAnswer: 0
+    },
+    {
+      questionText: "What is the purpose of Amazon Route 53?",
+      options: [
+        "A highly available and scalable cloud Domain Name System (DNS) web service designed to route end-user requests to internet applications and perform health checks",
+        "A GPS navigation tracking system for AWS delivery trucks",
+        "An automated backup scheduler for MySQL database instances",
+        "A load balancing hardware appliance installed inside customer data centers"
+      ],
+      correctAnswer: 0
+    }
+  ],
+  "AI & Machine Learning": [
+    {
+      questionText: "What is the difference between Deep Learning and traditional Machine Learning?",
+      options: [
+        "Deep learning uses artificial neural networks with multiple hidden layers that automatically learn hierarchical feature representations from raw data, whereas traditional ML often relies on manual feature engineering and simpler algorithms (like decision trees or regression)",
+        "Deep learning only works on spreadsheets, while traditional ML only works on robotics",
+        "Deep learning runs without electricity or computers, while traditional ML requires supercomputers",
+        "There is no difference; deep learning is just a marketing term for linear regression"
+      ],
+      correctAnswer: 0
+    },
+    {
+      questionText: "What is Overfitting in Machine Learning model training?",
+      options: [
+        "When a model trains so fast that it overheats the computer CPU hardware",
+        "When a model learns the training data too well—including statistical noise and outliers—resulting in exceptionally high training accuracy but poor generalizability and low accuracy on unseen test data",
+        "When a dataset contains fewer than 10 rows of data",
+        "When a neural network has zero weights and biases initialized"
+      ],
+      correctAnswer: 1
+    },
+    {
+      questionText: "What is the purpose of an Activation Function in an Artificial Neural Network (such as ReLU, Sigmoid, or Softmax)?",
+      options: [
+        "To power on the computer monitor when training completes",
+        "To introduce non-linearity into the network, allowing the neural network to learn complex patterns and decision boundaries beyond simple linear combinations",
+        "To compress dataset image files before feeding them into input layers",
+        "To encrypt model weights so competitors cannot reverse-engineer neural networks"
+      ],
+      correctAnswer: 1
+    },
+    {
+      questionText: "In Natural Language Processing (NLP) and Large Language Models (LLMs), what is a Token?",
+      options: [
+        "A physical security key card required to enter AI server data centers",
+        "The basic numerical building block or unit of text (such as a word, subword, or character) that text is converted into so that neural networks can process and analyze language",
+        "A cryptocurrency coin mined by AI computers during training",
+        "A syntax error message generated when grammar checks fail"
+      ],
+      correctAnswer: 1
+    },
+    {
+      questionText: "What is Retrieval-Augmented Generation (RAG) in generative AI applications?",
+      options: [
+        "A technique that combines a pre-trained Large Language Model with an external knowledge retrieval system (like a vector database of documents), allowing the model to generate factual answers grounded in specific custom data without retraining",
+        "A hardware cooling technique that pumps liquid refrigerant through GPU clusters",
+        "An algorithm that deletes old training data when hard drive storage is full",
+        "A method for translating voice audio recordings into Morse code signals"
+      ],
+      correctAnswer: 0
+    }
   ]
 };
 

@@ -150,7 +150,7 @@ const ApproveProject = () => {
               </div>
 
               <div className="approve-card-details">
-                <p className="project-description-text">{proj.description}</p>
+                <p className="project-description-text" style={{ whiteSpace: 'pre-wrap' }}>{proj.description}</p>
                 <div className="approve-metadata">
                   <span><Calendar size={13} /> Submitted: {new Date(proj.submittedDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
                 </div>

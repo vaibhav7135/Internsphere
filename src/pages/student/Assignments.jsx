@@ -86,6 +86,52 @@ const Assignments = () => {
     return new Date(dueDate) < new Date() && status === 'pending';
   };
 
+  const formatDescription = (text) => {
+    if (!text) return 'No description provided.';
+    
+    // First, let's inject newlines before known headers or bullet points if they are missing
+    let formattedText = text
+      // Add newline before known headers if preceded by a space/word
+      .replace(/(\w|\.|\)) (Objective:|Project Requirements:|Technical Requirements:|Team Collaboration Requirements:|Project Report \(Mandatory\):|PowerPoint Presentation \(Mandatory\):|Submission Requirements:|Evaluation Criteria:|Note:|Assignment Type:|Team Size:|Project Title:)/gi, '$1\n\n$2')
+      // Add newline before bullet points
+      .replace(/(\w|\.) [•\-]/g, '$1\n•');
+
+    // Split by newlines and map to paragraphs
+    const paragraphs = formattedText.split('\n').map(p => p.trim()).filter(p => p !== '');
+    
+    return (
+      <>
+        {paragraphs.map((para, idx) => {
+          // Check if paragraph is a known header
+          const headerMatch = para.match(/^(Objective|Project Requirements|Technical Requirements|Team Collaboration Requirements|Project Report \(Mandatory\)|PowerPoint Presentation \(Mandatory\)|Submission Requirements|Evaluation Criteria|Note|Assignment Type|Team Size|Project Title):/i);
+          
+          if (headerMatch) {
+            const parts = para.split(/:(.+)/); // Split only on first colon
+            return (
+              <div key={idx} style={{ marginTop: '16px', marginBottom: '8px' }}>
+                <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: parts[1]?.trim() ? '4px' : '0' }}>{parts[0]}:</strong>
+                {parts[1] && parts[1].trim() && <span>{parts[1].trim()}</span>}
+              </div>
+            );
+          }
+          
+          // Check if it's a bullet point
+          if (para.startsWith('•') || para.startsWith('-')) {
+            return (
+              <div key={idx} style={{ display: 'flex', marginBottom: '6px', paddingLeft: '8px' }}>
+                <span style={{ color: 'var(--primary)', marginRight: '8px', fontWeight: 'bold' }}>•</span>
+                <span>{para.substring(1).trim()}</span>
+              </div>
+            );
+          }
+          
+          // Normal paragraph
+          return <p key={idx} style={{ marginBottom: '10px' }}>{para}</p>;
+        })}
+      </>
+    );
+  };
+
   return (
     <div className="assignments animate-fadeInUp">
       {/* Header Banner */}
@@ -194,7 +240,7 @@ const Assignments = () => {
 
               <div className="assignments__detail-section">
                 <h4>Assignment Description</h4>
-                <p className="assignments__detail-desc">{selectedAssignment.description || 'No description provided.'}</p>
+                <div className="assignments__detail-desc">{formatDescription(selectedAssignment.description)}</div>
               </div>
 
               <div className="assignments__info-grid">

@@ -356,7 +356,7 @@ const CreateAssignments = () => {
                       <div>
                         <span className="create-assignments__title-text">{assignment.title}</span>
                         {assignment.description && (
-                          <p className="create-assignments__desc-text">{assignment.description}</p>
+                          <p className="create-assignments__desc-text" style={{ whiteSpace: 'pre-wrap' }}>{assignment.description}</p>
                         )}
                       </div>
                     </div>

@@ -238,7 +238,7 @@ const ProjectSubmission = () => {
                 </div>
                 <div className="submitted-row">
                   <span>Description:</span>
-                  <p>{project?.description}</p>
+                  <p style={{ whiteSpace: 'pre-wrap' }}>{project?.description}</p>
                 </div>
                 <div className="submitted-links">
                   <a href={project?.githubUrl} target="_blank" rel="noopener noreferrer" className="btn btn--secondary btn--sm">

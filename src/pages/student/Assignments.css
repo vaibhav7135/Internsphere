@@ -314,6 +314,7 @@
   font-size: var(--font-size-sm);
   color: var(--text-secondary);
   line-height: 1.6;
+  white-space: pre-wrap;
 }
 
 /* Info Grid Layout */
